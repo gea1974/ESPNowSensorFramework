@@ -20,9 +20,10 @@
 
 #include <lib/logging.h>
 #include <lib/authMac.h>
+#include <lib/ota.h>
 
 #define FRAMEWORK                             "ESP!NOW Sensor Framework"
-#define FRAMEWORK_VERSION                     0x000100
+#define FRAMEWORK_VERSION                     0x000200
 
 // This is the space in bytes that will be reserved in EEPROM for storing data that should be persisted.
 #define EEPROM_SIZE 64
@@ -105,6 +106,13 @@ public:
     void OnDataSent(uint8_t *mac, uint8_t sendStatus );
     void OnDataRecv(uint8_t *mac, const uint8_t *incomingData, uint8_t len);
 
+
+    void configmodeHandle();
+    void configmodeEnter();
+    void configmodeLeave();
+    void shutDownCheck();
+    void powerOff();
+
     void saveSettings();
     void loadSettings();
     void factorySettings();
@@ -117,18 +125,24 @@ public:
     uint32_t getSequenceNumber();
     uint32_t nextSequenceNumber();
 
+    bool      configmode = false;
+
+    String DeviceName;
     value_structure_t values;
     settings_structure_t settings;
 private:
 
     bool initialized = false;
-
     static uint8_t broadcastAddress[];
 
+    void VersionInfo();
+    void setupCustomMAC();
+    void setupDeviceName();
+    void setupPin();
+    void wakeUpReason();
     void printException(const char *message);
 
     void espnowinitialize();
-
     void espnowSetChannel(uint8_t ch);
     void espnowBroadcast(uint8_t *data, size_t data_size);
     void espnowMessageClear();
@@ -137,18 +151,29 @@ private:
     void espnowMessageSend();
     uint8_t broadcastChannel = 0;
 
+    void setupConfigMode();
+    unsigned long configModeTime;
+
     //Authentification
     bool      authTokenReqSent = false;
     bool      authTokenReceived = false;
     unsigned long authTokenRequestedTime;
     uint8_t   authToken[4] = {0x0, 0x0, 0x0, 0x0};           // CCM MAC (Message Authentication Code)
 
+    //ESP!Now Broadcast
     espnow_message_structure_t broadcast_data_to_send;
     espnow_message_structure_t broadcast_data;
     uint8_t broadcastRepeat = 0;
     bool broadcastAllChannels = false;
 
     uint32_t  lastRecvSeq = 0;
+    //=============================Creditials
+    const char* wifiSSID = WIFI_SSID;
+    const char* wifiPassword = WIFI_PASSWORD;
+    //=============================Webserver
+    String webserverGetPageRoot();
+    void webserverHandleSubmit();
+    void webserverSetup();
 };
-
+    extern EspNowSensorClass EspNowSensor;
 #endif

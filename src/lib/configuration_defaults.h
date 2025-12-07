@@ -1,8 +1,18 @@
-#ifndef DESCRIPTION
-    #define PRODUCT_ID                      "SENSOR"
-    #define DESCRIPTION                     "Generic ESP!Now Sensor"
-    #define PRODUCT_KEY                      0x00
+#ifndef PRODUCT
+    #define PRODUCT                             "ESP!NOW Sensor"
+    #define VERSION                             0x000000
+    #define PRODUCT_ID                          "SENSOR"
+    #define DESCRIPTION                         "Generic ESP!Now Sensor"
+    #define PRODUCT_KEY                         0x00
+    #define OWNER                               "gea"
 #endif
+#ifndef BUILD
+    #define BUILD                               LAST_BUILD_TIME
+#endif
+#ifndef BUILDTIME
+    #define BUILDTIME                           __DATE__ " "  __TIME__
+#endif
+
 
 #ifndef AUTHENTIFICATION_KEY
     #define AUTHENTIFICATION_KEY   "1234567890ABCDEF"
@@ -48,19 +58,29 @@
 #ifndef ESPNOW_CHANNEL
     #define ESPNOW_CHANNEL              ((1<<1 | 1<<6 | 1<<11) >> 1)
 #endif
-
+ 
 #ifndef SERIAL_DEBUG_PORT
         #if  (defined TYWE3S || defined ESP12)
-            #define SERIAL_DEBUG_TX_PIN         12
-            #define SERIAL_DEBUG_RX_PIN         13
-            #define SERIAL_DEBUG_PORT           1                   //0=Hardware Serial 1=Software Serial
-            #define BAUD_RATE_DEBUG 115200
+            #ifdef SERIAL_DEBUG_SW
+                #define SERIAL_DEBUG_TX_PIN         12
+                #define SERIAL_DEBUG_RX_PIN         13
+                #define SERIAL_DEBUG_PORT           1                   //0=Hardware Serial 1=Software Serial
+                #define BAUD_RATE_DEBUG 115200
+            #else
+                #define SERIAL_DEBUG_PORT           0                   //0=Hardware Serial 1=Software Serial
+                #define BAUD_RATE_DEBUG 115200
+            #endif
         #endif
         #ifdef ESP01F_CBU
-            #define SERIAL_DEBUG_TX_PIN         5
-            #define SERIAL_DEBUG_RX_PIN         4
-            #define SERIAL_DEBUG_PORT           1                   //0=Hardware Serial 1=Software Serial
-            #define BAUD_RATE_DEBUG 115200
+            #ifdef SERIAL_DEBUG_SW
+                #define SERIAL_DEBUG_TX_PIN         5
+                #define SERIAL_DEBUG_RX_PIN         4
+                #define SERIAL_DEBUG_PORT           1                   //0=Hardware Serial 1=Software Serial
+                #define BAUD_RATE_DEBUG 115200
+            #else
+                #define SERIAL_DEBUG_PORT           0                   //0=Hardware Serial 1=Software Serial
+                #define BAUD_RATE_DEBUG 115200
+            #endif
         #endif
         #ifdef ESP32C3WROOM06
             #define SERIAL_DEBUG_TX_PIN         21
@@ -168,6 +188,3 @@
 #ifndef DEEPSLEEP_TIME
     #define DEEPSLEEP_TIME                              0
 #endif
-//        #define SHUTDOWN_TIMER                     5000           //Shutdown ESP after ms
-//        #define ESPNOW_ALIVE                                      //Send alive message to ESP!Now on power on (if no Authentification token is required)
-//        #define ESPNOW_SEND_DATA_COMPLETE                         //Send data message to ESP!Now if all dpid recweived
