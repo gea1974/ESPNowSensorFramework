@@ -6,6 +6,7 @@
 uint8_t EspNowSensorClass::broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 EspNowSensorClass EspNowSensor;
+
 #ifdef ESP32
   #include <esp_wifi.h>
   #include <ESP32WebServer.h>
@@ -25,7 +26,10 @@ void EspNowSensorClass::begin() {
         return;
     }
     LoggingBegin();
-
+    printLogMsg("\n\n");
+    if (WiFi.mode(WIFI_STA) != true) {
+      printLogMsgTime("Setting Wi-Fi mode failed!\n");
+    }
     setupPin();
     setupDeviceName();
     VersionInfo();
@@ -35,7 +39,7 @@ void EspNowSensorClass::begin() {
     if (WiFi.mode(WIFI_STA) != true) {
       printLogMsgTime("Setting Wi-Fi mode failed!\n");
     }
-    printLogMsg("\n\n");
+
 
     EEPROM.begin(EEPROM_SIZE);
 
@@ -108,31 +112,66 @@ void EspNowSensorClass::setupPin(){
     #ifdef SHUTDOWN_PIN
       pinMode(SHUTDOWN_PIN, INPUT_PULLUP);
     #endif
+   #ifdef DEEPSLEEP_INTERUPT_PIN
+      pinMode(DEEPSLEEP_INTERUPT_PIN, INPUT_PULLUP);
+    #endif
 }
 void EspNowSensorClass::wakeUpReason(){
-String Wakeupreason;
+String reason;
   #ifdef ESP8266
-    Wakeupreason = ESP.getResetReason();
+    String resetReasonStr = ESP.getResetReason();
+    printLogMsgTime("Info: Reset: Reason: %s\n", resetReasonStr.c_str());
   #endif
   #ifdef ESP32
+    String wakeupReasonStr;
     esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
     switch(wakeup_reason)
     {
-      case ESP_SLEEP_WAKEUP_EXT0 : Wakeupreason = "Wakeup EXT0 RTC_IO"; break;
-      case ESP_SLEEP_WAKEUP_EXT1 : Wakeupreason = "Wakeup EXT1 RTC_CNTL"; break;
-      case ESP_SLEEP_WAKEUP_TIMER : Wakeupreason = "Wakeup Timer"; break;
-      case ESP_SLEEP_WAKEUP_TOUCHPAD : Wakeupreason = "Wakeup Touchpad"; break;
-      case ESP_SLEEP_WAKEUP_ULP : Wakeupreason = "Wakeup ULP program"; break;
-      case ESP_SLEEP_WAKEUP_GPIO: Wakeupreason = "Wakeup GPIO"; break;
+      case ESP_SLEEP_WAKEUP_EXT0 : wakeupReasonStr = "Wakeup EXT0 RTC_IO"; break;
+      case ESP_SLEEP_WAKEUP_EXT1 : wakeupReasonStr = "Wakeup EXT1 RTC_CNTL"; break;
+      case ESP_SLEEP_WAKEUP_TIMER : wakeupReasonStr = "Wakeup Timer"; break;
+      case ESP_SLEEP_WAKEUP_TOUCHPAD : wakeupReasonStr = "Wakeup Touchpad"; break;
+      case ESP_SLEEP_WAKEUP_ULP : wakeupReasonStr = "Wakeup ULP program"; break;
+      case ESP_SLEEP_WAKEUP_GPIO: wakeupReasonStr = "Wakeup GPIO"; break;
       default: {
-          Wakeupreason = "Wakeup unknown (";
-          Wakeupreason += wakeup_reason;
-          Wakeupreason += ")";
+          wakeupReasonStr = "Wakeup unknown (";
+          wakeupReasonStr += wakeup_reason;
+          wakeupReasonStr += ")";
           break;
       }
     }
+    String resetReasonStr;
+    esp_reset_reason_t reset_reason =  esp_reset_reason();
+    switch(reset_reason)
+    {
+      case ESP_RST_UNKNOWN : resetReasonStr = "Reset reason can not be determined"; break;
+      case ESP_RST_POWERON : resetReasonStr = "Reset due to power-on event"; break;
+      case ESP_RST_EXT : resetReasonStr = "Reset by external pin"; break;
+      case ESP_RST_SW : resetReasonStr = "Software reset via esp_restart"; break;
+      case ESP_RST_PANIC : resetReasonStr = "Software reset due to exception/panic"; break;
+      case ESP_RST_INT_WDT: resetReasonStr = "Reset (software or hardware) due to interrupt watchdog"; break;
+      case ESP_RST_TASK_WDT: resetReasonStr = "Reset due to task watchdog"; break;
+      case ESP_RST_WDT: resetReasonStr = "Reset due to other watchdogs"; break;
+      case ESP_RST_DEEPSLEEP: {
+                                resetReasonStr = "Reset after exiting deep sleep mode ("; 
+                                resetReasonStr += wakeupReasonStr.c_str();
+                                resetReasonStr += ")";
+                                break;
+                              }
+      case ESP_RST_BROWNOUT: resetReasonStr = "Brownout reset (software or hardware)"; break;
+      case ESP_RST_SDIO: resetReasonStr = "Reset over SDIO"; break;
+      default: {
+          resetReasonStr = "Reset reason unknown (";
+          resetReasonStr += reset_reason;
+          resetReasonStr += ")";
+          break;
+      }
+    }
+    printLogMsgTime("Info: Reset: Reason: %s\n", resetReasonStr.c_str());
   #endif
-  printLogMsgTime("Info: Startup: Reason: %s\n", Wakeupreason.c_str());
+
+
+
   }
 
 //=============================Config mode
@@ -237,12 +276,15 @@ void EspNowSensorClass::setupConfigMode() {
   }
 }
 void EspNowSensorClass::powerOff() {
+    if(broadcastSending) printLogMsgTime("PowerOff: Waiting for ESP!Now message sent\n" );
+    while (broadcastSending) delay(50);
+
     #ifdef ACTIVE_PIN
     digitalWrite(ACTIVE_PIN, !ACTIVE_PIN_POLARITY);
     #endif
 
     #ifdef VOLTAGE_REGULATOR_PIN
-      printLogMsgTime("PowerOff: Voltage regulator shutdown" );
+      printLogMsgTime("PowerOff: Voltage regulator shutdown\n" );
       delay(100);
       digitalWrite(VOLTAGE_REGULATOR_PIN, !VOLTAGE_REGULATOR_POLARITY);
     #endif
@@ -253,22 +295,28 @@ void EspNowSensorClass::powerOff() {
         if (duration>ESP.deepSleepMax()) duration=ESP.deepSleepMax();
       #endif
       String durationStr;
-      if (settings.deepsleepTime==0)  durationStr += "Wakeup: Reset";
+      if (settings.deepsleepTime==0)  durationStr += "Reset";
       else {
-        durationStr += "Wakeup: ";
+        durationStr += "Timer=";
         durationStr += (int32_t)(duration / 1000000);
         durationStr += "s";
       }
-      printLogMsgTime("PowerOff: Deepsleep: %s", durationStr.c_str());
+      printLogMsgTime("PowerOff: Deepsleep: Wakeup: %s\n", durationStr.c_str());
       delay(100);
       #ifdef ESP8266
         ESP.deepSleep(duration);
       #endif
       #ifdef ESP32
         #if (defined DEEPSLEEP_INTERUPT_PIN && (defined ESP32C3 || defined ESP32C2))
-          esp_deep_sleep_enable_gpio_wakeup(1 << DEEPSLEEP_INTERUPT_PIN, ESP_GPIO_WAKEUP_GPIO_HIGH);
+          if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_INTERUPT_PIN)) {
+            printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_INTERUPT_PIN);
+            esp_deep_sleep_enable_gpio_wakeup(1 << DEEPSLEEP_INTERUPT_PIN, (esp_deepsleep_gpio_wake_up_mode_t)DEEPSLEEP_INTERUPT_PIN_POLARITY);
+          }
+          else {
+            printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_INTERUPT_PIN);
+          }
         #endif
-        esp_sleep_enable_timer_wakeup(duration); // 10.000.000 Mikrosekunden = 10 Sekunden
+        if (duration>0) esp_sleep_enable_timer_wakeup(duration); // 10.000.000 Mikrosekunden = 10 Sekunden
         esp_deep_sleep_start();
       #endif
     #endif

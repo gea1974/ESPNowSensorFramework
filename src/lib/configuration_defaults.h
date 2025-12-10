@@ -34,6 +34,9 @@
 #ifdef ESP32C2WROOM06
     #define MCU_TYPE                    "ESP32-C2 WROOM06"
 #endif
+#ifdef ESP32C2WROOM01C
+    #define MCU_TYPE                    "ESP32-C2 WROOM01C"
+#endif
 
 #ifndef MCU_TYPE
     #ifdef ESP8266
@@ -76,23 +79,29 @@
                 #define SERIAL_DEBUG_TX_PIN         5
                 #define SERIAL_DEBUG_RX_PIN         4
                 #define SERIAL_DEBUG_PORT           1                   //0=Hardware Serial 1=Software Serial
-                #define BAUD_RATE_DEBUG 115200
+                #define BAUD_RATE_DEBUG             115200
             #else
                 #define SERIAL_DEBUG_PORT           0                   //0=Hardware Serial 1=Software Serial
-                #define BAUD_RATE_DEBUG 115200
+                #define BAUD_RATE_DEBUG             115200
             #endif
         #endif
         #ifdef ESP32C3WROOM06
             #define SERIAL_DEBUG_TX_PIN         21
             #define SERIAL_DEBUG_RX_PIN         20
             #define SERIAL_DEBUG_PORT           0 
-            #define BAUD_RATE_DEBUG 115200
+            #define BAUD_RATE_DEBUG             115200
         #endif
         #ifdef ESP32C2WROOM06
             #define SERIAL_DEBUG_TX_PIN         20
             #define SERIAL_DEBUG_RX_PIN         19
             #define SERIAL_DEBUG_PORT           0 
-            #define BAUD_RATE_DEBUG 115200
+            #define BAUD_RATE_DEBUG             115200
+        #endif
+        #ifdef ESP32C2WROOM01C
+            #define SERIAL_DEBUG_TX_PIN         20
+            #define SERIAL_DEBUG_RX_PIN         19
+            #define SERIAL_DEBUG_PORT           0 
+            #define BAUD_RATE_DEBUG             115200
         #endif
 #endif
 
@@ -179,10 +188,13 @@
     #define VOLTAGE_REGULATOR_POLARITY          HIGH 
 #endif
 #if (defined SETUP_PIN && !defined SETUP_PIN_POLARITY)
-    #define SETUP_PIN_POLARITY                 LOW 
+    #define SETUP_PIN_POLARITY                  LOW 
 #endif
 #if (defined SHUTDOWN_PIN && !defined SHUTDOWN_PIN_POLARITY)
     #define SHUTDOWN_PIN_POLARITY               LOW 
+#endif
+#if (defined DEEPSLEEP_INTERUPT_PIN && !defined DEEPSLEEP_INTERUPT_IN_POLARITY)
+    #define DEEPSLEEP_INTERUPT_PIN_POLARITY      LOW
 #endif
 
 #ifndef DEEPSLEEP_TIME

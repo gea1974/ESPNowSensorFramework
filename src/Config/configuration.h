@@ -8,11 +8,14 @@
 */
 
 /*
-#define ACTIVE_PIN                          2
-#define VOLTAGE_REGULATOR_PIN               15
+**Outputs
+    #define ACTIVE_PIN                      2
+    #define VOLTAGE_REGULATOR_PIN           15
+**Inputs
 #define SETUP_PIN                           0
 #define SHUTDOWN_PIN                        16
 #define DEEPSLEEP_INTERUPT_PIN              4
+#define DEEPSLEEP_INTERUPT_PIN_POLARITY      LOW // ESP_GPIO_WAKEUP_GPIO_HIGH
 */
 
 /*
