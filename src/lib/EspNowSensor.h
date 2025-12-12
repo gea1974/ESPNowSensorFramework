@@ -23,31 +23,33 @@
 #include <lib/ota.h>
 
 #define FRAMEWORK                             "ESP!NOW Sensor Framework"
-#define FRAMEWORK_VERSION                     0x000201
+#define FRAMEWORK_VERSION                     0x000202
 
 // This is the space in bytes that will be reserved in EEPROM for storing data that should be persisted.
-#define EEPROM_SIZE 64
+#define EEPROM_SIZE 512
 // This is the offset at which the sequence number will be stored inside the EEPROM.
-#define EEPROM_INITIALIZED                  0                  
-#define EEPROM_SEQUENCE                     4                 
-#define EEPROM_CHANNEL                      8
-#define EEPROM_USEAUTHTOKEN                 10
-#define EEPROM_BROADCASTREPEAT              11
-#define EEPROM_DEFAULTCHANNEL               12
-#define EEPROM_DEEPSLEEP_TIME               14
-#define EEPROM_CONFIG0                      18
-#define EEPROM_CONFIG1                      22
-#define EEPROM_CONFIG2                      26
-#define EEPROM_CONFIG3                      30
-#define EEPROM_CONFIG4                      34
-#define EEPROM_CONFIG5                      38
+#define EEPROM_INITIALIZED                  0  
 
-#define EEPROM_VALUE0                       48
-#define EEPROM_VALUE1                       52
-#define EEPROM_VALUE2                       56
-#define EEPROM_VALUE3                       60
+#define EEPROM_SEQUENCE                     10                 
+#define EEPROM_CHANNEL                      104
+#define EEPROM_USEAUTHTOKEN                 106
+#define EEPROM_BROADCASTREPEAT              107
+#define EEPROM_DEFAULTCHANNEL               108
 
-#define EEPROM_INITIALIZED_VALUE            0x5501
+#define EEPROM_DEEPSLEEP_TIME               200
+#define EEPROM_CONFIG0                      204
+#define EEPROM_CONFIG1                      208
+#define EEPROM_CONFIG2                      212
+#define EEPROM_CONFIG3                      216
+#define EEPROM_CONFIG4                      220
+#define EEPROM_CONFIG5                      224
+
+#define EEPROM_VALUE0                       400
+#define EEPROM_VALUE1                       404
+#define EEPROM_VALUE2                       408
+#define EEPROM_VALUE3                       412
+
+#define EEPROM_INITIALIZED_VALUE            FRAMEWORK_VERSION
 
 typedef struct EspNowMessageStructure {
   uint8_t program = 0x0;  // 0x91 for ON button, 0x81 for all others
@@ -75,11 +77,11 @@ typedef struct SettingsStructure{
   uint8_t broadcastRepeat = ESPNOW_REPEAT_SEND;
   uint8_t defaultChannel = 1;
   uint32_t deepsleepTime = DEEPSLEEP_TIME;
-  uint32_t Config[6] = {CONFIG0, CONFIG1, CONFIG2, CONFIG3, CONFIG4, CONFIG5};
+  uint32_t Config[6] = {SETTINGS_CONFIG0_INIT, SETTINGS_CONFIG1_INIT, SETTINGS_CONFIG2_INIT, SETTINGS_CONFIG3_INIT, SETTINGS_CONFIG4_INIT, SETTINGS_CONFIG5_INIT};
 } settings_structure_t;
 
 typedef struct ValueStructure{
-  uint32_t Value[4] = {(uint32_t)VALUE0, (uint32_t)VALUE1, (uint32_t)VALUE2, (uint32_t)VALUE3};
+  uint32_t Value[4] = {(uint32_t)VALUE_0_INIT, (uint32_t)VALUE_1_INIT, (uint32_t)VALUE_2_INIT, (uint32_t)VALUE_3_INIT};
 } value_structure_t;
 
 class EspNowSensorClass {
@@ -106,14 +108,15 @@ public:
     void OnDataSent(uint8_t *mac, uint8_t sendStatus );
     void OnDataRecv(uint8_t *mac, const uint8_t *incomingData, uint8_t len);
 
-
     void configmodeHandle();
     void configmodeEnter();
     void configmodeLeave();
     void shutDownCheck();
     void powerOff();
 
-    void saveSettings();
+    void initSettings();
+    void saveEspNowSettings();
+    void saveSensorSettings();
     void loadSettings();
     void factorySettings();
 
@@ -153,6 +156,7 @@ private:
 
     void setupConfigMode();
     unsigned long configModeTime;
+    unsigned long startTime;
 
     //Authentification
     bool      authTokenReqSent = false;
@@ -174,6 +178,7 @@ private:
     String webserverGetPageRoot();
     void webserverHandleSubmit();
     void webserverSetup();
+
 };
     extern EspNowSensorClass EspNowSensor;
 #endif

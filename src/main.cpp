@@ -51,10 +51,10 @@ void OnDataRecv(
       
   EspNowSensor.OnDataRecv(mac,incomingData,len);
 }
+
 //=============================Main
 void setup() {
   EspNowSensor.begin();
-
   EspNowSensor.registerSendCallback(OnDataSent);
   EspNowSensor.registerRecvCallback(OnDataRecv);
 }

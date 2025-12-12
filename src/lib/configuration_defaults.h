@@ -127,44 +127,44 @@
     #define DPID_VALUE4                 0
 #endif
 
-#ifndef CONFIG0
-    #define CONFIG0                 0
+#ifndef SETTINGS_CONFIG0_INIT
+    #define SETTINGS_CONFIG0_INIT                 0
 #endif
-#ifndef CONFIG1
-    #define CONFIG1                 0
+#ifndef SETTINGS_CONFIG1_INIT
+    #define SETTINGS_CONFIG1_INIT                 0
 #endif
-#ifndef CONFIG2
-    #define CONFIG2                 0
+#ifndef SETTINGS_CONFIG2_INIT
+    #define SETTINGS_CONFIG2_INIT                 0
 #endif
-#ifndef CONFIG3
-    #define CONFIG3                 0
+#ifndef SETTINGS_CONFIG3_INIT
+    #define SETTINGS_CONFIG3_INIT                 0
 #endif
-#ifndef CONFIG4
-    #define CONFIG4                 0
+#ifndef SETTINGS_CONFIG4_INIT
+    #define SETTINGS_CONFIG4_INIT                 0
 #endif
-#ifndef CONFIG5
-    #define CONFIG5                 0
+#ifndef SETTINGS_CONFIG5_INIT
+    #define SETTINGS_CONFIG5_INIT                 0
 #endif
 
-#ifndef VALUE0
-    #define VALUE0                 0
+#ifndef VALUE_0_INIT
+    #define VALUE_0_INIT                 0
 #endif
-#ifndef VALUE1
-    #define VALUE1                 0
+#ifndef VALUE_1_INIT
+    #define VALUE_1_INIT                 0
 #endif
-#ifndef VALUE2
-    #define VALUE2                 0
+#ifndef VALUE_2_INIT
+    #define VALUE_2_INIT                 0
 #endif
-#ifndef VALUE3
-    #define VALUE3                 0
+#ifndef VALUE_3_INIT
+    #define VALUE_3_INIT                 0
 #endif
 
 #ifndef CONFIG_MODE_TIMEOUT
-    #define CONFIG_MODE_TIMEOUT                 0
+    #define CONFIG_MODE_TIMEOUT                 300000
 #endif
 
 #ifndef SHUTDOWN_TIMER
-    #define SHUTDOWN_TIMER                      0
+    #define SHUTDOWN_TIMER                      30000
 #endif
 
 #ifndef AUTH_TOKEN_REQ

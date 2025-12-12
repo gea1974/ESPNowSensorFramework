@@ -25,6 +25,7 @@ void EspNowSensorClass::begin() {
     if (initialized) {
         return;
     }
+    startTime = millis();
     LoggingBegin();
     printLogMsg("\n\n");
     if (WiFi.mode(WIFI_STA) != true) {
@@ -214,6 +215,11 @@ void EspNowSensorClass::configmodeEnter(){
 }
 void EspNowSensorClass::configmodeLeave(){
   configmode = false;  
+  startTime = millis();
+  #ifdef ACTIVE_PIN
+    pinMode(ACTIVE_PIN, OUTPUT);
+    digitalWrite(ACTIVE_PIN, ACTIVE_PIN_POLARITY);
+  #endif
 }
 void EspNowSensorClass::setupConfigMode() {
   int wifiCounter = 0;
@@ -333,7 +339,7 @@ void EspNowSensorClass::shutDownCheck(){
 
   if (!configmode) {
     #ifdef SHUTDOWN_TIMER
-      if ( (millis()>SHUTDOWN_TIMER) ){
+      if ( (millis()>(startTime + SHUTDOWN_TIMER)) ){
           printLogMsgTime("Info: Timer: Shutdown request\n" );
           delay(100);
           powerOff();
@@ -449,7 +455,7 @@ void EspNowSensorClass::OnDataRecv(uint8_t * mac, const uint8_t *incomingData, u
       authTokenReceived = true;
       if (broadcastChannel!=settings.defaultChannel){
         settings.defaultChannel = broadcastChannel;
-        saveSettings();
+        saveEspNowSettings();
       }
     }
     else if ( (received_data.program==0xfb) && authTokenReceived ) ;
@@ -459,6 +465,7 @@ void EspNowSensorClass::OnDataRecv(uint8_t * mac, const uint8_t *incomingData, u
     lastRecvSeq = curRecvSeq;
   }
 }
+
 void EspNowSensorClass::printException(const char *message) {
     printLogMsgTime("ESP!Now Exception: %s -> System will restart in 5 seconds...\n" ,message);
     
@@ -719,15 +726,37 @@ void EspNowSensorClass::espnowMessageSend(){
 }
 
 //=============================settings
-void EspNowSensorClass::saveSettings(){
-  printLogMsgTime("ESP!Now:  Settings: Save\n");
+void EspNowSensorClass::initSettings(){
+  printLogMsgTime("Info: Settings: Init\n");
+  EEPROM.put(EEPROM_CHANNEL , ESPNOW_CHANNEL);
+  EEPROM.put(EEPROM_USEAUTHTOKEN , AUTH_TOKEN_REQ);
+  EEPROM.put(EEPROM_BROADCASTREPEAT , ESPNOW_REPEAT_SEND);
+  EEPROM.put(EEPROM_DEFAULTCHANNEL , 1);
+  EEPROM.put(EEPROM_DEEPSLEEP_TIME, DEEPSLEEP_TIME);
+  EEPROM.put(EEPROM_CONFIG0, SETTINGS_CONFIG0_INIT); 
+  EEPROM.put(EEPROM_CONFIG1, SETTINGS_CONFIG1_INIT); 
+  EEPROM.put(EEPROM_CONFIG2, SETTINGS_CONFIG1_INIT); 
+  EEPROM.put(EEPROM_CONFIG3, SETTINGS_CONFIG2_INIT); 
+  EEPROM.put(EEPROM_CONFIG4, SETTINGS_CONFIG3_INIT); 
+  EEPROM.put(EEPROM_CONFIG5, SETTINGS_CONFIG4_INIT); 
+
+  EEPROM.put(EEPROM_INITIALIZED , EEPROM_INITIALIZED_VALUE);
+
+  EEPROM.commit();
+}
+void EspNowSensorClass::saveEspNowSettings(){
+  printLogMsgTime("Info: Settings: ESP!Now Save\n");
   EEPROM.put(EEPROM_CHANNEL , settings.channel);
   EEPROM.put(EEPROM_USEAUTHTOKEN , settings.useAuthToken);
   EEPROM.put(EEPROM_BROADCASTREPEAT , settings.broadcastRepeat);
   EEPROM.put(EEPROM_DEFAULTCHANNEL , settings.defaultChannel);
+
+  EEPROM.commit();
+}
+void EspNowSensorClass::saveSensorSettings(){
+  printLogMsgTime("Info: Settings: Sensor Save\n");
   EEPROM.put(EEPROM_DEEPSLEEP_TIME, settings.deepsleepTime);
   EEPROM.put(EEPROM_CONFIG0, settings.Config); 
-  EEPROM.put(EEPROM_INITIALIZED , EEPROM_INITIALIZED_VALUE);
 
   EEPROM.commit();
 }
@@ -741,12 +770,12 @@ void EspNowSensorClass::loadSettings(){
     EEPROM.get(EEPROM_DEFAULTCHANNEL , settings.defaultChannel);
     EEPROM.get(EEPROM_DEEPSLEEP_TIME, settings.deepsleepTime);
     EEPROM.get(EEPROM_CONFIG0, settings.Config); 
-    printLogMsgTime("ESP!Now: Settings: Load\n");
+    printLogMsgTime("Info: Settings: Load\n");
   }
   else {
-    printLogMsgTime("ESP!Now: Settings: Initialize\n");
+    printLogMsgTime("Info: Settings: Initialize needed\n");
     EEPROM.put(EEPROM_SEQUENCE , 0x0000);
-    saveSettings();
+    initSettings();
   }
   if ((settings.channel & 0x3FFF)==0) settings.channel = 1057; // 1 + 6 + 11
   if (settings.broadcastRepeat==0) settings.broadcastRepeat=ESPNOW_REPEAT_SEND;
@@ -755,7 +784,7 @@ void EspNowSensorClass::loadSettings(){
   broadcastChannel = settings.defaultChannel;
 }
 void EspNowSensorClass::factorySettings(){
-  printLogMsgTime("ESP!Now: Settings: Factory settings!!\n");
+  printLogMsgTime("Info: Settings: Factory settings!!\n");
   EEPROM.put(EEPROM_SEQUENCE , 0x0000);
   EEPROM.put(EEPROM_INITIALIZED , 0x0000);
   EEPROM.commit();
@@ -795,7 +824,7 @@ void EspNowSensorClass::storeValue(uint8_t no, uint32_t value){
   }
   if (eepromAdr!=0) {
     printLogMsgTime("ESP!Now:  Values: Save: Value%d=%d\n",no,value);
-    EEPROM.put(EEPROM_VALUE0 , value);
+    EEPROM.put(eepromAdr , value);
     EEPROM.commit();
   }
 }
@@ -804,7 +833,7 @@ void EspNowSensorClass::loadValues(){
   EEPROM.get(EEPROM_CONFIG0, values.Value); 
 }
 void EspNowSensorClass::initValues(){
-  uint32_t initValue[4] = {(uint32_t)VALUE0, (uint32_t)VALUE1, (uint32_t)VALUE2, (uint32_t)VALUE3};
+  uint32_t initValue[4] = {(uint32_t)VALUE_0_INIT, (uint32_t)VALUE_1_INIT, (uint32_t)VALUE_2_INIT, (uint32_t)VALUE_3_INIT};
   EEPROM.put(EEPROM_VALUE0 , initValue);
   EEPROM.commit();
 }
@@ -857,6 +886,7 @@ String EspNowSensorClass::webserverGetPageRoot(){
   page += buffer;
   sprintf(buffer,"MCU: %s<br>", MCU_TYPE);
   page += buffer;
+
   page += "<h3>Network:</h3>";
   String ipaddress = WiFi.localIP().toString();
   sprintf(buffer,"SSID: %s<br>" , WiFi.SSID().c_str());
@@ -865,10 +895,11 @@ String EspNowSensorClass::webserverGetPageRoot(){
   page += buffer;
   sprintf(buffer,"Wifi channel: %d<br>", WiFi.channel());
   page += buffer;
+
   page += "<h3>ESP!Now:</h3>";
   sprintf(buffer,"Authentification Key: %s<br><br>", AUTHENTIFICATION_KEY);  
   page += buffer;
-  page += "<form action='/submit' method='POST'>"; 
+  page += "<form action='/espnowsettings' method='POST'>"; 
   page += "<label for='espnowCh'>Wifi channels (enabled): </label>";
   sprintf(buffer,"<INPUT type='number' name='espnowCh' id='espnowCh' value='%d' min='1' max='65535'><br>" , EspNowSensor.settings.channel);
   page += buffer;
@@ -881,11 +912,6 @@ String EspNowSensorClass::webserverGetPageRoot(){
   page += "<label for='espnowRepeat'>Broadcast repeat: </label>";
   sprintf(buffer,"<INPUT type='number' name='espnowRepeat' id='espnowRepeat' value='%d' min='1' max='10'><br>" , EspNowSensor.settings.broadcastRepeat);
   page += buffer;
-  #ifdef POWER_OFF_DEEPSLEEP
-  page += "<label for='deepsleepTime'>Deep sleep time [s]: </label>";
-  sprintf(buffer,"<INPUT type='number' name='deepsleepTime' id='deepsleepTime' value='%d' min='0' max='252000'><br>" , EspNowSensor.settings.deepsleepTime);
-  page += buffer;
-  #endif
   page += "<INPUT type='submit' value='Submit'>";
   page += "</form>";
 
@@ -895,10 +921,69 @@ String EspNowSensorClass::webserverGetPageRoot(){
   page += buffer;
   page += "<INPUT type='submit' value='Set'>";
   page += "</form>";
-  
+
+  #if (defined POWER_OFF_DEEPSLEEP || defined SETTINGS_CONFIG0 || defined SETTINGS_CONFIG1 || defined SETTINGS_CONFIG2 || defined SETTINGS_CONFIG3 || defined SETTINGS_CONFIG4 || defined SETTINGS_CONFIG5)
+    page += "<h3>Settings:</h3>";
+    page += "<form action='/sensorsettings' method='POST'>"; 
+    #ifdef POWER_OFF_DEEPSLEEP
+      page += "<label for='deepsleepTime'>Deep sleep time [s]: </label>";
+      sprintf(buffer,"<INPUT type='number' name='deepsleepTime' id='deepsleepTime' value='%d' min='0' max='252000'><br>" , EspNowSensor.settings.deepsleepTime);
+      page += buffer;
+    #endif
+    #ifdef SETTINGS_CONFIG0
+      page += "<label for='settings0'>";
+      page += SETTINGS_CONFIG0_NAME;
+      page += ":</label>";
+      sprintf(buffer,"<INPUT type='number' name='settings0' id='settings0' value='%d'><br>" , EspNowSensor.settings.Config[0]);
+      page += buffer;
+    #endif
+    #ifdef SETTINGS_CONFIG1
+      page += "<label for='settings1'>";
+      page += SETTINGS_CONFIG1_NAME;
+      page += ":</label>";
+      sprintf(buffer,"<INPUT type='number' name='settings0' id='settings1' value='%d'><br>" , EspNowSensor.settings.Config[1]);
+      page += buffer;
+    #endif
+    #ifdef SETTINGS_CONFIG2
+      page += "<label for='settings2'>";
+      page += SETTINGS_CONFIG2_NAME;
+      page += ":</label>";
+      sprintf(buffer,"<INPUT type='number' name='settings2' id='settings2' value='%d'><br>" , EspNowSensor.settings.Config[2]);
+      page += buffer;
+    #endif
+    #ifdef SETTINGS_CONFIG3
+      page += "<label for='settings3'>";
+      page += SETTINGS_CONFIG3_NAME;
+      page += ":</label>";
+      sprintf(buffer,"<INPUT type='number' name='settings3' id='settings3' value='%d'><br>" , EspNowSensor.settings.Config[3]);
+      page += buffer;
+    #endif
+    #ifdef SETTINGS_CONFIG4
+      page += "<label for='settings4'>";
+      page += SETTINGS_CONFIG4_NAME;
+      page += ":</label>";
+      sprintf(buffer,"<INPUT type='number' name='settings4' id='settings4' value='%d'><br>" , EspNowSensor.settings.Config[4]);
+      page += buffer;
+    #endif
+    #ifdef SETTINGS_CONFIG5
+      page += "<label for='settings5'>";
+      page += SETTINGS_CONFIG5_NAME;
+      page += ":</label>";
+      sprintf(buffer,"<INPUT type='number' name='settings5' id='settings5' value='%d'><br>" , EspNowSensor.settings.Config[5]);
+      page += buffer;
+    #endif
+    page += "<INPUT type='submit' value='Submit'>";
+    page += "</form>";
+  #endif
   page += "<br>";
   page += "<form action='/reboot' method='POST'>"; 
   page += "<INPUT type='submit' value='Reboot'>";
+  page += "</form>";
+  page += "<form action='/exit' method='POST'>"; 
+  page += "<INPUT type='submit' value='Exit'>";
+  page += "</form>";
+  page += "<form action='/poweroff' method='POST'>"; 
+  page += "<INPUT type='submit' value='Power off'>";
   page += "</form>";
 
   page += "</body></html>";
@@ -925,6 +1010,12 @@ void EspNowSensorClass::webserverHandleSubmit(){
     else if (server.argName(i)=="espnowRepeat") EspNowSensor.settings.broadcastRepeat = server.arg(i).toInt();
     else if (server.argName(i)=="espnowSeq") EspNowSensor.setSequenceNumber(server.arg(i).toInt());
     else if (server.argName(i)=="deepsleepTime") EspNowSensor.settings.deepsleepTime = (uint32_t)server.arg(i).toInt();
+    else if (server.argName(i)=="settings0") EspNowSensor.settings.Config[0] = (uint32_t)server.arg(i).toInt();
+    else if (server.argName(i)=="settings1") EspNowSensor.settings.Config[1] = (uint32_t)server.arg(i).toInt();
+    else if (server.argName(i)=="settings2") EspNowSensor.settings.Config[2] = (uint32_t)server.arg(i).toInt();
+    else if (server.argName(i)=="settings3") EspNowSensor.settings.Config[3] = (uint32_t)server.arg(i).toInt();
+    else if (server.argName(i)=="settings4") EspNowSensor.settings.Config[4] = (uint32_t)server.arg(i).toInt();
+    else if (server.argName(i)=="settings5") EspNowSensor.settings.Config[5] = (uint32_t)server.arg(i).toInt();
   }
 }
 void EspNowSensorClass::webserverSetup(){
@@ -936,14 +1027,20 @@ void EspNowSensorClass::webserverSetup(){
     server.send(200, "text/html", EspNowSensor.webserverGetPageRoot());
     printLogMsgTime("Info: Webserver: root page\n");
   });
-  server.on("/submit", []() {
-    printLogMsgTime("Info: Webserver: Settings ..\n");
+  server.on("/espnowsettings", []() {
+    printLogMsgTime("Info: Webserver: ESP!Now settings\n");
     EspNowSensor.webserverHandleSubmit();
-    EspNowSensor.saveSettings();
+    EspNowSensor.saveEspNowSettings();
+    server.send ( 200, "text/html", EspNowSensor.webserverGetPageRoot() );
+  });
+  server.on("/sensorsettings", []() {
+    printLogMsgTime("Info: Webserver: Sensor settings\n");
+    EspNowSensor.webserverHandleSubmit();
+    EspNowSensor.saveSensorSettings();
     server.send ( 200, "text/html", EspNowSensor.webserverGetPageRoot() );
   });
   server.on("/seqnum", []() {
-    printLogMsgTime("Info: Webserver: ESP!Now sequence number submit\n");
+    printLogMsgTime("Info: Webserver: ESP!Now sequence number\n");
     EspNowSensor.webserverHandleSubmit();
     server.send ( 200, "text/html", EspNowSensor.webserverGetPageRoot() );
   });
@@ -957,6 +1054,15 @@ void EspNowSensorClass::webserverSetup(){
     #endif
     delay(500);
   });
+  server.on("/exit", []() {
+    printLogMsgTime("Info: Webserver: Exit configuration mode\n");
+    EspNowSensor.configmodeLeave();
+  });
+  server.on("/poweroff", []() {
+    printLogMsgTime("Info: Webserver: Power off\n");
+    EspNowSensor.powerOff();
+  });
+
   server.begin();
   delay(1000);
   printLogMsgTime("Info: Webserver: started.\n");

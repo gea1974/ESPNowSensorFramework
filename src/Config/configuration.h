@@ -25,6 +25,29 @@
 #define ESPNOW_SEND_DATA_COMPLETE                           //Send data message to ESP!Now if all dpid recweived
 */
 
+/*
+#define SETTINGS_CONFIG0
+#define SETTINGS_CONFIG0_NAME               "Settings 0"
+#define SETTINGS_CONFIG1
+#define SETTINGS_CONFIG1_NAME               "Settings 1"
+#define SETTINGS_CONFIG2
+#define SETTINGS_CONFIG2_NAME               "Settings 2"
+#define SETTINGS_CONFIG3
+#define SETTINGS_CONFIG3_NAME               "Settings 3"
+*/
+#define SETTINGS_CONFIG4
+#define SETTINGS_CONFIG4_NAME               "Settings 4"
+#define SETTINGS_CONFIG5
+#define SETTINGS_CONFIG5_NAME               "Settings 5"
+
+#define VALUE_0
+#define VALUE_0_NAME                        "Value 0"
+#define VALUE_1
+#define VALUE_1_NAME                        "Value 1"
+#define VALUE_2
+#define VALUE_2_NAME                        "Value 2"
+#define VALUE_3
+#define VALUE_3_NAME                        "Value 3"
 
 
 // Enter Project configuration above this line
