@@ -1,7 +1,4 @@
-#include <Arduino.h>
-#include <FS.h>
 #include <config/configuration.h>
-#include <EEPROM.h>
 
 #include <lib/logging.h>
 
