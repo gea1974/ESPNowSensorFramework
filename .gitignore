@@ -5,5 +5,3 @@
 .vscode/ipch
 platformio_devices.ini
 password.txt
-main.cpp
-Config
