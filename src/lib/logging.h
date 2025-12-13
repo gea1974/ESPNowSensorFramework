@@ -8,7 +8,7 @@
 
 #define MESSAGE_IDLE_INTERVAL       1000
 
-#include <lib/configuration_defaults.h>
+#include <configuration.h>
 
 void LoggingBegin();
 

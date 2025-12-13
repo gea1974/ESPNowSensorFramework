@@ -6,7 +6,7 @@
 
     void ArduinoOtaStart() {
         // setup for OTA
-        const String myhostname = F("EspNowSensor exended");
+        const String myhostname = F("EspNowSensor");
         ArduinoOTA.setHostname(myhostname.c_str()); // weird: this decides the mDNS name
         ArduinoOTA.onStart([]()
         {

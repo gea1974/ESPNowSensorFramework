@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <lib/configuration_defaults.h>
+#include <configuration.h>
 #include <lib/logging.h>
 
 #include <Crypto.h>
