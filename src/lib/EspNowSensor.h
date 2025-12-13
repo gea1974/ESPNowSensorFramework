@@ -15,7 +15,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 
-#include <config/configuration.h>
+#include <lib/configuration_defaults.h>
 
 #include <lib/logging.h>
 #include <lib/authMac.h>
