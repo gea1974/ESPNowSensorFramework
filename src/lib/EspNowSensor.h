@@ -91,6 +91,7 @@ public:
 
     void begin();
 
+    void espnowMessageDataSetProgram(uint8_t prog);
     void espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t value);
     void espnowMessageDataSend();
     void espnowMessageAuthTokenRequest();
@@ -161,6 +162,7 @@ private:
     bool      authTokenReqSent = false;
     bool      authTokenReceived = false;
     unsigned long authTokenRequestedTime;
+    uint8_t   authTokenRequestRetry = 0;
     uint8_t   authToken[4] = {0x0, 0x0, 0x0, 0x0};           // CCM MAC (Message Authentication Code)
 
     //ESP!Now Broadcast

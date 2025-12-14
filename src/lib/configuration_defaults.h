@@ -108,9 +108,6 @@
 #ifndef DPID_STATE
     #define DPID_STATE                  0
 #endif
-#ifndef DPID_STATE_POLARITY
-    #define DPID_STATE_POLARITY         1
-#endif
 #ifndef DPID_BATTERY
     #define DPID_BATTERY                0
 #endif
@@ -173,6 +170,10 @@
 #ifndef AUTH_TOKEN_REQUEST_TIMEOUT
     #define AUTH_TOKEN_REQUEST_TIMEOUT          1000
 #endif
+#ifndef AUTH_TOKEN_REQUEST_RETRY
+    #define AUTH_TOKEN_REQUEST_RETRY            9
+#endif
+
 #ifndef ESPNOW_REPEAT_SEND
     #define ESPNOW_REPEAT_SEND                  5
 #endif
@@ -193,8 +194,8 @@
 #if (defined SHUTDOWN_PIN && !defined SHUTDOWN_PIN_POLARITY)
     #define SHUTDOWN_PIN_POLARITY               LOW 
 #endif
-#if (defined DEEPSLEEP_INTERUPT_PIN && !defined DEEPSLEEP_INTERUPT_IN_POLARITY)
-    #define DEEPSLEEP_INTERUPT_PIN_POLARITY      LOW
+#if ((defined DEEPSLEEP_WAKEUP_GPIO_PIN1 || defined DEEPSLEEP_WAKEUP_GPIO_PIN2 || defined DEEPSLEEP_WAKEUP_GPIO_PIN3 || defined DEEPSLEEP_WAKEUP_GPIO_PIN4) && !defined DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY)
+    #define DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY      LOW
 #endif
 
 #ifndef DEEPSLEEP_TIME

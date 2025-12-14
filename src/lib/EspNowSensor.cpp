@@ -113,8 +113,17 @@ void EspNowSensorClass::setupPin(){
     #ifdef SHUTDOWN_PIN
       pinMode(SHUTDOWN_PIN, INPUT_PULLUP);
     #endif
-   #ifdef DEEPSLEEP_INTERUPT_PIN
-      pinMode(DEEPSLEEP_INTERUPT_PIN, INPUT_PULLUP);
+   #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN1
+      pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN1, INPUT_PULLUP);
+    #endif
+   #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN2
+      pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN2, INPUT_PULLUP);
+    #endif
+   #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN3
+      pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN3, INPUT_PULLUP);
+    #endif
+   #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN4
+      pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN4, INPUT_PULLUP);
     #endif
 }
 void EspNowSensorClass::wakeUpReason(){
@@ -313,13 +322,46 @@ void EspNowSensorClass::powerOff() {
         ESP.deepSleep(duration);
       #endif
       #ifdef ESP32
-        #if (defined DEEPSLEEP_INTERUPT_PIN && (defined ESP32C3 || defined ESP32C2))
-          if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_INTERUPT_PIN)) {
-            printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_INTERUPT_PIN);
-            esp_deep_sleep_enable_gpio_wakeup(1 << DEEPSLEEP_INTERUPT_PIN, (esp_deepsleep_gpio_wake_up_mode_t)DEEPSLEEP_INTERUPT_PIN_POLARITY);
-          }
-          else {
-            printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_INTERUPT_PIN);
+        #if (defined ESP32C3 || defined ESP32C2)
+          uint64_t gpioWakeupPins = 0;
+          #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN1
+            if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_WAKEUP_GPIO_PIN1)) {
+              printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_WAKEUP_GPIO_PIN1);
+              gpioWakeupPins += (1 << DEEPSLEEP_WAKEUP_GPIO_PIN1);
+            }
+            else {
+              printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_WAKEUP_GPIO_PIN1);
+            }
+          #endif
+          #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN2
+            if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_WAKEUP_GPIO_PIN2)) {
+              printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_WAKEUP_GPIO_PIN2);
+              gpioWakeupPins += (1 << DEEPSLEEP_WAKEUP_GPIO_PIN2);
+            }
+            else {
+              printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_WAKEUP_GPIO_PIN2);
+            }
+          #endif
+          #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN3
+            if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_WAKEUP_GPIO_PIN3)) {
+              printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_WAKEUP_GPIO_PIN3);
+              gpioWakeupPins += (1 << DEEPSLEEP_WAKEUP_GPIO_PIN3);
+            }
+            else {
+              printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_WAKEUP_GPIO_PIN3);
+            }
+          #endif
+          #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN4
+            if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_WAKEUP_GPIO_PIN4)) {
+              printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_WAKEUP_GPIO_PIN4);
+              gpioWakeupPins += (1 << DEEPSLEEP_WAKEUP_GPIO_PIN4);
+            }
+            else {
+              printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_WAKEUP_GPIO_PIN4);
+            }
+          #endif
+          if (gpioWakeupPins!=0) {
+            esp_deep_sleep_enable_gpio_wakeup(gpioWakeupPins, (esp_deepsleep_gpio_wake_up_mode_t)DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY);
           }
         #endif
         if (duration>0) esp_sleep_enable_timer_wakeup(duration); // 10.000.000 Mikrosekunden = 10 Sekunden
@@ -486,6 +528,7 @@ void EspNowSensorClass::espnowAuthCheck()
       if (settings.useAuthToken) {
           printLogMsgTime("ESP!Now: Authentification: token required\n");
           espnowMessageAuthTokenRequest();
+          authTokenRequestRetry++;
           authTokenRequestedTime = millis();
       }
       else {
@@ -503,6 +546,10 @@ void EspNowSensorClass::espnowAuthCheck()
         printLogMsgTime("ESP!Now: Authentification: authentification token request timeout\n");
         broadcastChannel++;
         authTokenReqSent = false;
+        if (authTokenRequestRetry>=AUTH_TOKEN_REQUEST_RETRY) {
+          printLogMsgTime("ESP!Now: Authentification: authentification token request no response .. power off\n");
+          powerOff();
+        }
       }
     }
   }
@@ -548,7 +595,12 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
     }
     else if (dpid==DPID_STATE) {
       broadcast_data_to_send.dTypeState = dpid;
+      #ifdef DPID_STATE_POLARITY
       broadcast_data_to_send.dataState = b[3]==DPID_STATE_POLARITY;
+      #endif
+      #ifndef DPID_STATE_POLARITY
+      broadcast_data_to_send.dataState = b[3];
+      #endif
       printLogMsgTime("ESP!Now: Message: Data: DPID: %d, State = %d\n",dpid, broadcast_data_to_send.dataState);
     }
     else if (dpid==DPID_BATTERY) {
@@ -595,17 +647,23 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
     #ifdef ESPNOW_SEND_DATA_COMPLETE
     if (   (broadcast_data_to_send.dTypeState==DPID_STATE) 
         && (broadcast_data_to_send.dTypeBattery==DPID_BATTERY) 
+        #ifdef ESPNOW_TELEGRAM_EXTENDED
         && (broadcast_data_to_send.dTypeData1==DPID_VALUE1)
         && (broadcast_data_to_send.dTypeData2==DPID_VALUE2)
         && (broadcast_data_to_send.dTypeData3==DPID_VALUE3)
-        && (broadcast_data_to_send.dTypeData4==DPID_VALUE4) )  {
+        && (broadcast_data_to_send.dTypeData4==DPID_VALUE4) 
+        #endif
+      )  {
       printLogMsgTime("ESP!Now: Message: Data: all DPID values received, sending ESP!Now message.\n");
       espnowMessageDataSend();
     }
     #endif //ESPNOW_SEND_DATA_COMPLETE
 }
+void EspNowSensorClass::espnowMessageDataSetProgram(uint8_t prog) {
+  broadcast_data_to_send.program = prog;
+}
 void EspNowSensorClass::espnowMessageDataSend() {
-  broadcast_data_to_send.program = 0xa0;
+  if (broadcast_data_to_send.program==0x00) broadcast_data_to_send.program = 0xa0;
   broadcast_data = broadcast_data_to_send;
   espnowMessageClear();
   espnowMessageSend();
@@ -819,17 +877,17 @@ void EspNowSensorClass::storeValue(uint8_t no, uint32_t value){
     break;
   default:
     eepromAdr = 0;
-    printLogMsgTime("ESP!Now:  Values: Save: wrong address\n");
+    printLogMsgTime("Info: Values: Save: wrong address\n");
     break;
   }
   if (eepromAdr!=0) {
-    printLogMsgTime("ESP!Now:  Values: Save: Value%d=%d\n",no,value);
+    printLogMsgTime("Info: Values: Save: Value%d=%d\n",no,value);
     EEPROM.put(eepromAdr , value);
     EEPROM.commit();
   }
 }
 void EspNowSensorClass::loadValues(){
-  printLogMsgTime("ESP!Now: Values: Load\n");
+  printLogMsgTime("Info: Values: Load\n");
   EEPROM.get(EEPROM_CONFIG0, values.Value); 
 }
 void EspNowSensorClass::initValues(){
@@ -840,7 +898,7 @@ void EspNowSensorClass::initValues(){
 
 //=============================Sequence number
 void EspNowSensorClass::setSequenceNumber(uint32_t sequenceNumber) {
-  printLogMsgTime("ESP!Now: Settings: Set sequence number: %d\n",sequenceNumber);
+  printLogMsgTime("Info: Settings: Set sequence number: %d\n",sequenceNumber);
   EEPROM.put(EEPROM_SEQUENCE , sequenceNumber);
   EEPROM.commit();
 }

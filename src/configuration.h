@@ -14,8 +14,8 @@
 **Inputs
 #define SETUP_PIN                           0
 #define SHUTDOWN_PIN                        16
-#define DEEPSLEEP_INTERUPT_PIN              4
-#define DEEPSLEEP_INTERUPT_PIN_POLARITY      LOW // ESP_GPIO_WAKEUP_GPIO_HIGH
+#define DEEPSLEEP_WAKEUP_GPIO_PIN1              4
+#define DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY      LOW // ESP_GPIO_WAKEUP_GPIO_HIGH
 */
 
 /*
