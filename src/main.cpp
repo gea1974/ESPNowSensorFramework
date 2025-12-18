@@ -4,6 +4,8 @@
 
 #include <lib/EspNowSensor.h>
 
+uint8_t   dataBatteryLevel = 0;
+
 //=============================ESP!Now
 void OnDataSent(
     #ifdef ESP8266 
@@ -54,11 +56,13 @@ void setup() {
   EspNowSensor.begin();
   EspNowSensor.registerSendCallback(OnDataSent);
   EspNowSensor.registerRecvCallback(OnDataRecv);
+
+  if (!EspNowSensor.configmode) dataBatteryLevel = EspNowSensor.batteryLevel();
 }
 
 void loop() {
   EspNowSensor.configmodeHandle();
-  EspNowSensor.espnowAuthCheck();
+  if (!EspNowSensor.configmode) EspNowSensor.espnowAuthCheck();
 
   //Sensor user application
 

@@ -25,6 +25,9 @@
 #ifdef TYWE3S
     #define MCU_TYPE                    "TYWES3 (ESP8266)"
 #endif
+#ifdef ESP_WROOM_02
+    #define MCU_TYPE                    "ESP-WROOM-02 (ESP8266)"
+#endif
 #ifdef ESP01F_CBU
     #define MCU_TYPE                    "ESP01F CBU-Replacement (ESP8285)"
 #endif

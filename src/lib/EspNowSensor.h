@@ -20,6 +20,7 @@
 #include <lib/logging.h>
 #include <lib/authMac.h>
 #include <lib/ota.h>
+#include <lib/batteryLevel.h>
 
 #define FRAMEWORK                             "ESP!NOW Sensor Framework"
 #define FRAMEWORK_VERSION                     0x000202
@@ -123,6 +124,8 @@ public:
     void storeValue(uint8_t no, uint32_t value);
     void loadValues();
     void initValues();
+
+    uint8_t batteryLevel();
 
     void setSequenceNumber(uint32_t sequenceNumber);
     uint32_t getSequenceNumber();

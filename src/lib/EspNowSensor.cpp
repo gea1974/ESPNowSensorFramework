@@ -32,14 +32,11 @@ void EspNowSensorClass::begin() {
       printLogMsgTime("Setting Wi-Fi mode failed!\n");
     }
     setupPin();
+
     setupDeviceName();
     VersionInfo();
-    wakeUpReason();  
     setupCustomMAC();
-
-    if (WiFi.mode(WIFI_STA) != true) {
-      printLogMsgTime("Setting Wi-Fi mode failed!\n");
-    }
+    wakeUpReason();  
 
 
     EEPROM.begin(EEPROM_SIZE);
@@ -68,25 +65,25 @@ void EspNowSensorClass::setupCustomMAC()
   #ifdef CUSTOM_MAC_ADDRESS
   printLogMsgTime("Info: Setting custom MAC address: %s\n" ,CUSTOM_MAC_ADDRESS);
   uint8_t mac[6];
-  const char cutomMac[18] = {CUSTOM_MAC_ADDRESS};
+  const char customMac[18] = {CUSTOM_MAC_ADDRESS};
   char str[2];
-  str[0] = cutomMac[0];
-  str[1] = cutomMac[1];
+  str[0] = customMac[0];
+  str[1] = customMac[1];
   mac[0] = (uint8_t) strtol(str, 0, 16);
-  str[0] = cutomMac[3];
-  str[1] = cutomMac[4];
+  str[0] = customMac[3];
+  str[1] = customMac[4];
   mac[1] = (uint8_t) strtol(str, 0, 16);     
-  str[0] = cutomMac[6];
-  str[1] = cutomMac[7];
+  str[0] = customMac[6];
+  str[1] = customMac[7];
   mac[2] = (uint8_t) strtol(str, 0, 16);
-  str[0] = cutomMac[9];
-  str[1] = cutomMac[10];
+  str[0] = customMac[9];
+  str[1] = customMac[10];
   mac[3] = (uint8_t) strtol(str, 0, 16);                        
-  str[0] = cutomMac[12];
-  str[1] = cutomMac[13];
+  str[0] = customMac[12];
+  str[1] = customMac[13];
   mac[4] = (uint8_t) strtol(str, 0, 16);
-  str[0] = cutomMac[15];
-  str[1] = cutomMac[16];
+  str[0] = customMac[15];
+  str[1] = customMac[16];
   mac[5] = (uint8_t) strtol(str, 0, 16);
   wifi_set_macaddr(0, const_cast<uint8*>(mac));   //This line changes MAC adderss of ESP8266
   #endif
@@ -95,6 +92,28 @@ void EspNowSensorClass::setupDeviceName(){
   char buffer[100];
   uint8_t mac[6];
   WiFi.macAddress(mac);
+  #ifdef CUSTOM_MAC_ADDRESS
+  const char customMac[18] = {CUSTOM_MAC_ADDRESS};
+  char str[2];
+  str[0] = customMac[0];
+  str[1] = customMac[1];
+  mac[0] = (uint8_t) strtol(str, 0, 16);
+  str[0] = customMac[3];
+  str[1] = customMac[4];
+  mac[1] = (uint8_t) strtol(str, 0, 16);     
+  str[0] = customMac[6];
+  str[1] = customMac[7];
+  mac[2] = (uint8_t) strtol(str, 0, 16);
+  str[0] = customMac[9];
+  str[1] = customMac[10];
+  mac[3] = (uint8_t) strtol(str, 0, 16);                        
+  str[0] = customMac[12];
+  str[1] = customMac[13];
+  mac[4] = (uint8_t) strtol(str, 0, 16);
+  str[0] = customMac[15];
+  str[1] = customMac[16];
+  mac[5] = (uint8_t) strtol(str, 0, 16);
+  #endif
   sprintf(buffer,"%s_%02X%02X%02X%02X%02X%02X",PRODUCT_ID, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
   DeviceName = buffer;
 }
@@ -112,18 +131,6 @@ void EspNowSensorClass::setupPin(){
     #endif
     #ifdef SHUTDOWN_PIN
       pinMode(SHUTDOWN_PIN, INPUT_PULLUP);
-    #endif
-   #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN1
-      pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN1, INPUT_PULLUP);
-    #endif
-   #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN2
-      pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN2, INPUT_PULLUP);
-    #endif
-   #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN3
-      pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN3, INPUT_PULLUP);
-    #endif
-   #ifdef DEEPSLEEP_WAKEUP_GPIO_PIN4
-      pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN4, INPUT_PULLUP);
     #endif
 }
 void EspNowSensorClass::wakeUpReason(){
@@ -302,6 +309,10 @@ void EspNowSensorClass::powerOff() {
       printLogMsgTime("PowerOff: Voltage regulator shutdown\n" );
       delay(100);
       digitalWrite(VOLTAGE_REGULATOR_PIN, !VOLTAGE_REGULATOR_POLARITY);
+      while(true) {
+        printLogMsg(".");
+        delay(100);
+      }
     #endif
 
     #ifdef POWER_OFF_DEEPSLEEP
@@ -321,6 +332,7 @@ void EspNowSensorClass::powerOff() {
       #ifdef ESP8266
         ESP.deepSleep(duration);
       #endif
+
       #ifdef ESP32
         #if (defined ESP32C3 || defined ESP32C2)
           uint64_t gpioWakeupPins = 0;
@@ -328,6 +340,7 @@ void EspNowSensorClass::powerOff() {
             if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_WAKEUP_GPIO_PIN1)) {
               printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_WAKEUP_GPIO_PIN1);
               gpioWakeupPins += (1 << DEEPSLEEP_WAKEUP_GPIO_PIN1);
+              pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN1, DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY==LOW ? INPUT_PULLUP : INPUT);
             }
             else {
               printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_WAKEUP_GPIO_PIN1);
@@ -337,6 +350,7 @@ void EspNowSensorClass::powerOff() {
             if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_WAKEUP_GPIO_PIN2)) {
               printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_WAKEUP_GPIO_PIN2);
               gpioWakeupPins += (1 << DEEPSLEEP_WAKEUP_GPIO_PIN2);
+              pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN2, DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY==LOW ? INPUT_PULLUP : INPUT);
             }
             else {
               printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_WAKEUP_GPIO_PIN2);
@@ -346,6 +360,7 @@ void EspNowSensorClass::powerOff() {
             if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_WAKEUP_GPIO_PIN3)) {
               printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_WAKEUP_GPIO_PIN3);
               gpioWakeupPins += (1 << DEEPSLEEP_WAKEUP_GPIO_PIN3);
+              pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN3, DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY==LOW ? INPUT_PULLUP : INPUT);
             }
             else {
               printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_WAKEUP_GPIO_PIN3);
@@ -355,6 +370,7 @@ void EspNowSensorClass::powerOff() {
             if(esp_sleep_is_valid_wakeup_gpio((gpio_num_t)DEEPSLEEP_WAKEUP_GPIO_PIN4)) {
               printLogMsgTime("PowerOff: Deepsleep: Wakeup: GPIO=%d\n", DEEPSLEEP_WAKEUP_GPIO_PIN4);
               gpioWakeupPins += (1 << DEEPSLEEP_WAKEUP_GPIO_PIN4);
+              pinMode(DEEPSLEEP_WAKEUP_GPIO_PIN4, DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY==LOW ? INPUT_PULLUP : INPUT);
             }
             else {
               printLogMsgTime("PowerOff: Deepsleep: GPIO pin %d is invalid\n", DEEPSLEEP_WAKEUP_GPIO_PIN4);
@@ -917,6 +933,11 @@ uint32_t EspNowSensorClass::nextSequenceNumber() {
   EEPROM.commit();
 
   return sequenceNumber;
+}
+
+//=============================Battery level
+uint8_t EspNowSensorClass::batteryLevel(){
+  return getBatteryLevel();
 }
 
 //=============================Webserver
