@@ -679,7 +679,7 @@ void EspNowSensorClass::espnowMessageDataSetProgram(uint8_t prog) {
   broadcast_data_to_send.program = prog;
 }
 void EspNowSensorClass::espnowMessageDataSend() {
-  if (broadcast_data_to_send.program==0x00) broadcast_data_to_send.program = 0xa0;
+  if (broadcast_data_to_send.program==0x00) broadcast_data_to_send.program = 0xD0;
   broadcast_data = broadcast_data_to_send;
   espnowMessageClear();
   espnowMessageSend();
@@ -785,8 +785,8 @@ void EspNowSensorClass::espnowMessageSend(){
       String messageTyp;
       if (broadcast_data.program== 0xFA) messageTyp = F("Authentifcation request ");
       else if (broadcast_data.program== 0xAF) messageTyp = F("Sensor alive ");
-      else if (broadcast_data.program== 0xA0) messageTyp = F("Sensor data ");
-      else if (broadcast_data.program== 0xA0) messageTyp = F("Configuration mode ");
+      else if (broadcast_data.program== 0xD0) messageTyp = F("Sensor data ");
+      else if (broadcast_data.program== 0xC0) messageTyp = F("Configuration mode ");
       char dataChar[2];
       sprintf (dataChar, "%02X", broadcast_data.program);
       messageTyp += F("(");
