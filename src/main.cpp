@@ -57,7 +57,7 @@ void setup() {
   EspNowSensor.registerSendCallback(OnDataSent);
   EspNowSensor.registerRecvCallback(OnDataRecv);
 
-  if (!EspNowSensor.configmode) dataBatteryLevel = EspNowSensor.batteryLevel();
+  dataBatteryLevel = EspNowSensor.batteryLevel();
 }
 
 void loop() {
