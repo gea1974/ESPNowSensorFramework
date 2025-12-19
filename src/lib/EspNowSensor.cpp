@@ -218,7 +218,7 @@ void EspNowSensorClass::configmodeHandle(){
       ArduinoOTA.handle();
       yield();
     }
-    if( ((millis()-configModeTime)>CONFIG_MODE_TIMEOUT) && (CONFIG_MODE_TIMEOUT>0) ) {
+    if( ((millis()-configModeTime)>(CONFIG_MODE_TIMEOUT*1000)) && (CONFIG_MODE_TIMEOUT>0) ) {
       printLogMsgTime("Info: Config: Time out\n"); 
       configmodeLeave();  
     }
@@ -397,7 +397,7 @@ void EspNowSensorClass::shutDownCheck(){
 
   if (!configmode) {
     #ifdef SHUTDOWN_TIMER
-      if ( (millis()>(startTime + SHUTDOWN_TIMER)) ){
+      if ( (millis()>(startTime + (SHUTDOWN_TIMER*1000))) ){
           printLogMsgTime("Info: Timer: Shutdown request\n" );
           delay(100);
           powerOff();

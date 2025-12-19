@@ -20,7 +20,7 @@
 
 /*
 #define POWER_OFF_DEEPSLEEP
-#define SHUTDOWN_TIMER                      60000           //Shutdown ESP after ms
+#define SHUTDOWN_TIMER                      60              //Shutdown ESP after s
 #define ESPNOW_ALIVE                                        //Send alive message to ESP!Now on power on (if no Authentification token is required)
 #define ESPNOW_SEND_DATA_COMPLETE                           //Send data message to ESP!Now if all dpid recweived
 */

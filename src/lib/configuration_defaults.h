@@ -160,11 +160,11 @@
 #endif
 
 #ifndef CONFIG_MODE_TIMEOUT
-    #define CONFIG_MODE_TIMEOUT                 300000
+    #define CONFIG_MODE_TIMEOUT                 120
 #endif
 
 #ifndef SHUTDOWN_TIMER
-    #define SHUTDOWN_TIMER                      30000
+    #define SHUTDOWN_TIMER                      30
 #endif
 
 #ifndef AUTH_TOKEN_REQ
