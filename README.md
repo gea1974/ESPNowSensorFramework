@@ -1,32 +1,35 @@
 # ESP!Now Sensor Framework
 
-Framework for ESP!Now Sensors and Remotes
+## Framework for ESP!Now Sensors and Remotes
 
 
 
-Option                              Default (Example)                               Description                                                                                 Configuration
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                                                                                    Various Product / project information
-PRODUCT                             "ESP!NOW Sensor"                                                                                                                            Coded
-VERSION                             0x000000                                                                                                                                    Coded
-PRODUCT_ID                          "SENSOR"                                                                                                                                    Coded
-DESCRIPTION                         "Generic ESP!Now Sensor"                                                                                                                    Coded
-PRODUCT_KEY                         0x00                                                                                                                                        Coded
-OWNER                               "gea"                                                                                                                                       Coded
+Configuration                       |Default (Example)                      |Description                                                                                    |               |
+------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
+                                    |                                       |Various Product / project information                                                          |               |
+PRODUCT                             |"ESP!NOW Sensor"                       |                                                                                               |Coded          |
+VERSION                             |0x000000                               |                                                                                               |Coded          |
+PRODUCT_ID                          |"SENSOR"                               |                                                                                               |Coded          |
+DESCRIPTION                         |"Generic ESP!Now Sensor"               |                                                                                               |Coded          |
+PRODUCT_KEY                         |0x00                                   |                                                                                               |Coded          |
+OWNER                               |"gea"                                  |                                                                                               |Coded          |
+------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
+CUSTOM_MAC_ADDRESS                  |("00:00:00:00:00:00")                  |use this MAC address instead of ESP MAC address (WizMote compatibility)                        |Coded          |
+------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
+Serial debug settings               |                                       |                                                                                               |               |
+SERIAL_DEBUG_TX_PIN                 |MCU spezific                           |Serial debug TX pin                                                                            |Coded          |
+SERIAL_DEBUG_RX_PIN                 |MCU spezific                           |Serial debug RX pin                                                                            |Coded          |
+SERIAL_DEBUG_PORT                   |MCU spezific                           |Serial debug port 0=Hardware Serial 1=Software Serial                                          |Coded          |
+BAUD_RATE_DEBUG                     |115200                                 |Serial debug baud                                                                              |Coded          |
+------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
+ESP!Now Authentification  settings  |                                       |                                                                                               |               |               
+AUTHENTIFICATION_KEY                |"1234567890ABCDEF"                     |ESP!Now Authentification Key                                                                   |Coded          |
+AUTH_TOKEN_REQ                      |0                                      |Authentification Token needed                                                                  |Website        |
+AUTH_TOKEN_REQUEST_TIMEOUT          |1000                                   |Timeout no Authentification token received, try next eabled channel                            |Coded          |
+AUTH_TOKEN_REQUEST_RETRY            |9                                      |no of retries if no Authentification token received                                            |Coded          |
 
-CUSTOM_MAC_ADDRESS                  ("00:00:00:00:00:00")                           use this MAC address instead of ESP MAC address (WizMote compatibility)                     Coded
 
-                                                                                    Serial debug settings
-SERIAL_DEBUG_TX_PIN                 MCU spezific                                    Serial debug TX pin                                                                         Coded
-SERIAL_DEBUG_RX_PIN                 MCU spezific                                    Serial debug RX pin                                                                         Coded
-SERIAL_DEBUG_PORT                   MCU spezific                                    Serial debug port 0=Hardware Serial 1=Software Serial                                       Coded
-BAUD_RATE_DEBUG                     115200                                          Serial debug baud                                                                           Coded
 
-                                                                                    ESP!Now Authentification settings
-AUTHENTIFICATION_KEY                "1234567890ABCDEF"                              ESP!Now Authentification Key                                                                Coded
-AUTH_TOKEN_REQ                      0                                               Authentification Token needed                                                               Website
-AUTH_TOKEN_REQUEST_TIMEOUT          1000                                            Timeout no Authentification token received, try next eabled channel                         Coded
-AUTH_TOKEN_REQUEST_RETRY            9                                               no of retries if no Authentification token received                                         Coded
 
                                                                                     ESP!Now settings
 ESPNOW_CHANNEL                      ((1<<1 | 1<<6 | 1<<11) >> 1)                    ESP!Nowenabled channel bitmask (Default 1, 6, 11)                                           Website
@@ -74,7 +77,6 @@ DEEPSLEEP_WAKEUP_GPIO_PIN2          (1..5)                                      
 DEEPSLEEP_WAKEUP_GPIO_PIN3          (1..5)                                          3. pin for wakeup from deepsleep (only ESP32C2 or ESP32C3)                                  Coded
 DEEPSLEEP_WAKEUP_GPIO_PIN4          (1..5)                                          4. pin for wakeup from deepsleep (only ESP32C2 or ESP32C3)                                  Coded
 DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY  LOW                                             Polarity of pin for wakeup from deepsleep                                                   Coded
-
 DEEPSLEEP_TIME                      0                                               Time for deepsleep (0=sleep unitl reset)                                                    Website (settings.deepsleepTime)
 
                                                                                     Settings for product configuration x=0..5 (free to use in product for configurations)

@@ -787,6 +787,9 @@ void EspNowSensorClass::espnowMessageSend(){
       else if (broadcast_data.program== 0xAF) messageTyp = F("Sensor alive ");
       else if (broadcast_data.program== 0xD0) messageTyp = F("Sensor data ");
       else if (broadcast_data.program== 0xC0) messageTyp = F("Configuration mode ");
+      else if (broadcast_data.program== 0x91) messageTyp = F("WizMote ON ");
+      else if (broadcast_data.program== 0x81) messageTyp = F("WizMote key ");
+      else messageTyp = F("Unspecified ");
       char dataChar[2];
       sprintf (dataChar, "%02X", broadcast_data.program);
       messageTyp += F("(");

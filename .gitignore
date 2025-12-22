@@ -5,3 +5,4 @@
 .vscode/ipch
 platformio_devices.ini
 password.txt
+README_example.md
