@@ -13,10 +13,10 @@
     #define BUILDTIME                           __DATE__ " "  __TIME__
 #endif
 
-#ifdef WIFI_SSID
+#ifndef WIFI_SSID
     #define WIFI_SSID                               "mySSID"
 #endif
-#ifdef WIFI_PASSWORD
+#ifndef WIFI_PASSWORD
     #define WIFI_PASSWORD                           "mySecretWifiPassword"
 #endif
 
