@@ -3,7 +3,7 @@
 ## Framework for ESP!Now Sensors and Remotes
 
 
-
+## Configuration options
 Configuration                       |Default (Example)                      |Description                                                                                    |               |
 ------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
 **Various Product information**     |                                       |                                                                                               |               |
@@ -13,21 +13,23 @@ PRODUCT_ID                          |"SENSOR"                               |   
 DESCRIPTION                         |"Generic ESP!Now Sensor"               |                                                                                               |Coded          |
 PRODUCT_KEY                         |0x00                                   |                                                                                               |Coded          |
 OWNER                               |"gea"                                  |                                                                                               |Coded          |
-**MAC address**                     |                                       |                                                                                               |               |
+**Networking**                      |                                       |                                                                                               |               |
+WIFI_SSID                           |"mySSID"                               |Wifi SSID for configuration mode                                                               |Platformio     |
+WIFI_PASSWORD                       |"mySecretWifiPassword"                 |Wifi password for WIFI_SSID                                                                    |Platformio     |
 CUSTOM_MAC_ADDRESS                  |("00:00:00:00:00:00")                  |use this MAC address instead of ESP MAC address (WizMote compatibility)                        |Coded          |
 **Serial debug settings**           |                                       |                                                                                               |               |
 SERIAL_DEBUG_TX_PIN                 |MCU spezific                           |Serial debug TX pin                                                                            |Coded          |
 SERIAL_DEBUG_RX_PIN                 |MCU spezific                           |Serial debug RX pin                                                                            |Coded          |
-SERIAL_DEBUG_PORT                   |MCU spezific                           |Serial debug port<br>0 = Hardware Serial<br> 1 = Software Serial                                          |Coded          |
+SERIAL_DEBUG_PORT                   |MCU spezific                           |Serial debug port<br>0 = Hardware Serial<br> 1 = Software Serial                               |Coded          |
 BAUD_RATE_DEBUG                     |115200                                 |Serial debug baud                                                                              |Coded          |
 **ESP!Now Authentification  settings**  |                                   |                                                                                               |               |               
 AUTHENTIFICATION_KEY                |"1234567890ABCDEF"                     |ESP!Now Authentification Key                                                                   |Coded          |
-AUTH_TOKEN_REQ                      |0                                      |Authentification Token needed                                                                  |Website        |
+AUTH_TOKEN_REQ                      |0                                      |Authentification Token needed                                                                  |Website<br>settings.useAuthToken|
 AUTH_TOKEN_REQUEST_TIMEOUT          |1000                                   |Timeout no Authentification token received, try next eabled channel                            |Coded          |
 AUTH_TOKEN_REQUEST_RETRY            |9                                      |no of retries if no Authentification token received                                            |Coded          |
 **ESP!Now settings**                |                                       |                                                                                               |               |  
-ESPNOW_CHANNEL                      |Channel 1, 6, 11           |ESP!Now enabled channel bitmask                                               |Website        |
-ESPNOW_REPEAT_SEND                  |5                                      |ESP!Now telegrams sent on each enabled channel                                                 |Website        |
+ESPNOW_CHANNEL                      |1057 (Channel 1, 6, 11)                 |ESP!Now enabled channel bitmask                                                               |Website<br>settings.channel|
+ESPNOW_REPEAT_SEND                  |5                                      |ESP!Now telegrams sent on each enabled channel                                                 |Website<br>settings.broadcastRepeat|
 ESPNOW_TELEGRAM_WIZMOTE             |(#define)                              |WizMote compatible ESP!Now telegrams used                                                      |Coded          |
 ESPNOW_TELEGRAM_EXTENDED            |(#define) ->default                    |Extended ESP!Now telegrams used (WizMote + 4 uint32_t values)                                  |Coded          |
 ESPNOW_ALIVE                        |(#define)                              |Send ESP!Now alive telegram (program=AF)                                                       |Coded          |
@@ -53,19 +55,19 @@ SHUTDOWN_PIN_POLARITY               |LOW                                    |Pol
 **Time out**                        |                                       |                                                                                               |               |
 CONFIG_MODE_TIMEOUT                 |120                                    |Leave config mode after this time                                                              |Coded          |                                    
 SHUTDOWN_TIMER                      |30                                     |Shutdown after this time  if not in configuration mode                                         |Coded          |
-**Power off**                       |                                       |it is recommended to use only one power off option                                             |               |
+**Power off**                       |                                       |recommended to use only one power off option                                             |               |
 POWER_OFF_EXTERNAL                  |(#define)                              |power off by external (only waiting for power off)                                             |               |
 POWER_OFF_VOLTAGE_REGULATOR         |(#define)                              |power off by VOLTAGE_REGULATOR_PIN (need to be defined)                                        |               |
 POWER_OFF_DEEPSLEEP                 |(#define)                              |power off by deep sleep                                                                        |               |   
-**Deep sleep**                      |                                       |                                                                                               |               |
-DEEPSLEEP_TIME                      |0                                      |Time in sec. for deepsleep (0=sleep unitl reset)                                               |Website<br>(settings.deepsleepTime)|         
+**Deep sleep**                      |                                       |POWER_OFF_DEEPSLEEP is defined                                                                 |               |
+DEEPSLEEP_TIME                      |0                                      |Time in sec. for deepsleep (0=sleep unitl reset)                                               |Website<br>settings.deepsleepTime|         
 DEEPSLEEP_WAKEUP_GPIO_PIN1          |(1..5)                                 |1. pin for wakeup from deepsleep (only ESP32C2 or ESP32C3)                                     |Coded          |
 DEEPSLEEP_WAKEUP_GPIO_PIN2          |(1..5)                                 |2. pin for wakeup from deepsleep (only ESP32C2 or ESP32C3)                                     |Coded          |          
 DEEPSLEEP_WAKEUP_GPIO_PIN3          |(1..5)                                 |3. pin for wakeup from deepsleep (only ESP32C2 or ESP32C3)                                     |Coded          |
 DEEPSLEEP_WAKEUP_GPIO_PIN4          |(1..5)                                 |4. pin for wakeup from deepsleep (only ESP32C2 or ESP32C3)                                     |Coded          |
 DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY  |LOW                                    |Polarity of pin for wakeup from deepsleep                                                      |Coded          |
 **Settings for product configuration**|                                     |x=0..5 (free to use in product for configurations)                                             |               |  
-SETTINGS_CONFIGx                    (#define)                               |use configuration x                                                                            |Website<br>(settings.Config[x])|
+SETTINGS_CONFIGx                    (#define)                               |use configuration x                                                                            |Website<br>settings.Config[x]|
 SETTINGS_CONFIGx_NAME               |"Settings x"                           |Name for configuration x (Website)                                                             |Coded          |
 SETTINGS_CONFIGx_INIT               |0                                      |Initial value for configuration x                                                              |Coded          |
 **Settings for product value storage**|                                     |x=0..3 (free to use in product for value storage)                                              |               | 

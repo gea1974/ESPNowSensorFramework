@@ -13,6 +13,12 @@
     #define BUILDTIME                           __DATE__ " "  __TIME__
 #endif
 
+#ifdef ESP12
+    #define WIFI_SSID                               "mySSID"
+#endif
+#ifdef ESP12
+    #define WIFI_PASSWORD                           "mySecretWifiPassword"
+#endif
 
 #ifndef AUTHENTIFICATION_KEY
     #define AUTHENTIFICATION_KEY   "1234567890ABCDEF"
