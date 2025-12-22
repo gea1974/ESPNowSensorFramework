@@ -13,10 +13,10 @@
     #define BUILDTIME                           __DATE__ " "  __TIME__
 #endif
 
-#ifdef ESP12
+#ifdef WIFI_SSID
     #define WIFI_SSID                               "mySSID"
 #endif
-#ifdef ESP12
+#ifdef WIFI_PASSWORD
     #define WIFI_PASSWORD                           "mySecretWifiPassword"
 #endif
 
@@ -72,7 +72,7 @@
 #endif
  
 #ifndef SERIAL_DEBUG_PORT
-        #if  (defined TYWE3S || defined ESP12)
+        #if  (defined TYWE3S || defined ESP12 || defined ESP_WROOM_02)
             #ifdef SERIAL_DEBUG_SW
                 #define SERIAL_DEBUG_TX_PIN         12
                 #define SERIAL_DEBUG_RX_PIN         13
