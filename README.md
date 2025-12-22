@@ -13,42 +13,34 @@ PRODUCT_ID                          |"SENSOR"                               |   
 DESCRIPTION                         |"Generic ESP!Now Sensor"               |                                                                                               |Coded          |
 PRODUCT_KEY                         |0x00                                   |                                                                                               |Coded          |
 OWNER                               |"gea"                                  |                                                                                               |Coded          |
-------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
+**MAC address**                     |                                       |                                                                                               |               |
 CUSTOM_MAC_ADDRESS                  |("00:00:00:00:00:00")                  |use this MAC address instead of ESP MAC address (WizMote compatibility)                        |Coded          |
-------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
-Serial debug settings               |                                       |                                                                                               |               |
+**Serial debug settings**           |                                       |                                                                                               |               |
 SERIAL_DEBUG_TX_PIN                 |MCU spezific                           |Serial debug TX pin                                                                            |Coded          |
 SERIAL_DEBUG_RX_PIN                 |MCU spezific                           |Serial debug RX pin                                                                            |Coded          |
 SERIAL_DEBUG_PORT                   |MCU spezific                           |Serial debug port 0=Hardware Serial 1=Software Serial                                          |Coded          |
 BAUD_RATE_DEBUG                     |115200                                 |Serial debug baud                                                                              |Coded          |
-------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
-ESP!Now Authentification  settings  |                                       |                                                                                               |               |               
+**ESP!Now Authentification  settings**  |                                   |                                                                                               |               |               
 AUTHENTIFICATION_KEY                |"1234567890ABCDEF"                     |ESP!Now Authentification Key                                                                   |Coded          |
 AUTH_TOKEN_REQ                      |0                                      |Authentification Token needed                                                                  |Website        |
 AUTH_TOKEN_REQUEST_TIMEOUT          |1000                                   |Timeout no Authentification token received, try next eabled channel                            |Coded          |
 AUTH_TOKEN_REQUEST_RETRY            |9                                      |no of retries if no Authentification token received                                            |Coded          |
+**ESP!Now settings**                |                                       |                                                                                               |               |  
+ESPNOW_CHANNEL                      |((1<<1 | 1<<6 | 1<<11) >> 1)           |ESP!Nowenabled channel bitmask (Default 1, 6, 11)                                              |Website        |
+ESPNOW_REPEAT_SEND                  |5                                      |ESP!Now telegrams sent on each enabled channel                                                 |Website        |
+ESPNOW_TELEGRAM_WIZMOTE             |(#define)                              |WizMote compatible ESP!Now telegrams used                                                      |Coded          |
+ESPNOW_TELEGRAM_EXTENDED            |(#define) ->default                    |Extended ESP!Now telegrams used (WizMote + 4 uint32_t values)                                  |Coded          |
+ESPNOW_ALIVE                        |(#define)                              |Send ESP!Now alive telegram (program=AF)                                                       |Coded          |
+ESPNOW_SEND_DATA_COMPLETE           |(#define)                              |Send ESP!Now data telegram, if all dpid added (program=DO)                                     |Coded          |
+**Data point identifier**           |                                       |inspired by TUYA telegrams (0=not used)                                                        |               |
+DPID_STATE                          |0                                      |Data point identifier for state value                                                          |Coded          |
+DPID_BATTERY                        |0                                      |Data point identifier for battery value                                                        |Coded          |
+DPID_VALUE1                         |0                                      |Data point identifier for process value 1                                                      |Coded          |
+DPID_VALUE2                         |0                                      |Data point identifier for process value 2                                                      |Coded          |
+DPID_VALUE3                         |0                                      |Data point identifier for process value 3                                                      |Coded          |
+DPID_VALUE4                         |0                                      |Data point identifier for process value 4                                                      |Coded          |
+DPID_STATE_POLARITY                 |(value)                                |- undefined: State = data - defined: State = data==DPID_STATE_POLARITY                            |Coded          |
 
-
-
-
-                                                                                    ESP!Now settings
-ESPNOW_CHANNEL                      ((1<<1 | 1<<6 | 1<<11) >> 1)                    ESP!Nowenabled channel bitmask (Default 1, 6, 11)                                           Website
-ESPNOW_REPEAT_SEND                  5                                               ESP!Now telegrams sent on each enabled channel                                              Website
-ESPNOW_TELEGRAM_WIZMOTE             (#define)                                       WizMote compatible ESP!Now telegrams used                                                   Coded
-ESPNOW_TELEGRAM_EXTENDED            (#define) ->default                             Extended ESP!Now telegrams used (WizMote + 4 uint32_t values)                               Coded
-ESPNOW_ALIVE                        (#define)                                       Send ESP!Now alive telegram (program=AF)                                                    Coded
-ESPNOW_SEND_DATA_COMPLETE           (#define)                                       Send ESP!Now data telegram, if all dpid added (program=DO)                                  Coded
-
-                                                                                    Data point identifier inspired by TUYA telegrams (0=not used)
-DPID_STATE                          0                                               Data point identifier for state value                                                       Coded
-DPID_BATTERY                        0                                               Data point identifier for battery value                                                     Coded
-DPID_VALUE1                         0                                               Data point identifier for process value 1                                                   Coded
-DPID_VALUE2                         0                                               Data point identifier for process value 2                                                   Coded
-DPID_VALUE3                         0                                               Data point identifier for process value 3                                                   Coded
-DPID_VALUE4                         0                                               Data point identifier for process value 4                                                   Coded
-
-DPID_STATE_POLARITY                 (value)                                         undefined:  State = data                                                                    Coded
-                                                                                    defined:    State = data==DPID_STATE_POLARITY 
 
 CONFIG_MODE_TIMEOUT                 120                                             Leave config mode after this time                                                           Coded                                    
 SHUTDOWN_TIMER                      30                                              Shutdown after this time  if not in configuration mode                                      Coded
