@@ -33,7 +33,7 @@ uint8_t getBatteryLevel()
 
 float getBatteryVoltage(int adc_value)
 {
-    float battery_voltage = BATTERY_VREF / ADC_DIGIT_RANGE * adc_value * BATTERY_VOLTAGE_DIVIDER;
+    float battery_voltage = BATTERY_ADC_VREF / BATTERY_ADC_DIGIT_RANGE * adc_value * BATTERY_VOLTAGE_DIVIDER;
 
     return  battery_voltage;
 }

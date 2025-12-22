@@ -29,11 +29,11 @@
     #ifndef BATTERY_VOLTAGE_DIVIDER
         #define BATTERY_VOLTAGE_DIVIDER      2.5
     #endif
-    #ifndef BATTERY_VREF
-        #define BATTERY_VREF    3.300
+    #ifndef BATTERY_ADC_VREF
+        #define BATTERY_ADC_VREF    3.300
     #endif
-    #ifndef ADC_DIGIT_RANGE
-        #define ADC_DIGIT_RANGE 4095.0
+    #ifndef BATTERY_ADC_DIGIT_RANGE
+        #define BATTERY_ADC_DIGIT_RANGE 4095.0
     #endif
 #endif
 
@@ -41,21 +41,13 @@
     #ifndef BATTERY_VOLTAGE_DIVIDER
         #define BATTERY_VOLTAGE_DIVIDER      3.5
     #endif
-    #ifndef BATTERY_VREF
-        #define BATTERY_VREF    1.000
+    #ifndef BATTERY_ADC_VREF
+        #define BATTERY_ADC_VREF    1.000
     #endif
-    #ifndef ADC_DIGIT_RANGE
-        #define ADC_DIGIT_RANGE 1024.0
+    #ifndef BATTERY_ADC_DIGIT_RANGE
+        #define BATTERY_ADC_DIGIT_RANGE 1024.0
     #endif
 #endif
-
-//    3.3V = 960  digit
-//    3.52V = 1024 digit
-//    Vbat = Vref * (R1 +R2) / R2
-//    3.52 = (R1 + R2) / R2      ->R2 = 100
-//    352 = R1 + 100
-//    R1 = 250
-
 
 uint8_t getBatteryLevel();
 float getBatteryVoltage(int adc_value);
