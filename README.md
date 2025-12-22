@@ -6,7 +6,7 @@
 
 Configuration                       |Default (Example)                      |Description                                                                                    |               |
 ------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|
-Various Product information         |                                       |                                                         |               |
+**Various Product information**     |                                       |                                                                                               |               |
 PRODUCT                             |"ESP!NOW Sensor"                       |                                                                                               |Coded          |
 VERSION                             |0x000000                               |                                                                                               |Coded          |
 PRODUCT_ID                          |"SENSOR"                               |                                                                                               |Coded          |
