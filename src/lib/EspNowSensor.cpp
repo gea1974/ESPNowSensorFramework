@@ -313,7 +313,7 @@ void EspNowSensorClass::powerOff() {
       }
     #endif
 
-    #if (defined POWER_OFF_VOLTAGE_REGULATOR && defined VOLTAGE_REGULATOR_PIN)
+    #ifdef POWER_OFF_VOLTAGE_REGULATOR
       printLogMsgTime("PowerOff: Voltage regulator shutdown\n" );
       delay(100);
       digitalWrite(VOLTAGE_REGULATOR_PIN, !VOLTAGE_REGULATOR_POLARITY);

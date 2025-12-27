@@ -55,10 +55,10 @@ SHUTDOWN_PIN_POLARITY               |LOW                                    |Pol
 **Time out**                        |                                       |                                                                                               |               |
 CONFIG_MODE_TIMEOUT                 |120                                    |Leave config mode after this time                                                              |Coded          |                                    
 SHUTDOWN_TIMER                      |30                                     |Shutdown after this time  if not in configuration mode                                         |Coded          |
-**Power off**                       |                                       |recommended to use only one power off option                                             |               |
+**Power off**                       |                                       |recommended to use only one power off option                                                   |               |
 POWER_OFF_EXTERNAL                  |(#define)                              |power off by external (only waiting for power off)                                             |               |
 POWER_OFF_VOLTAGE_REGULATOR         |(#define)                              |power off by VOLTAGE_REGULATOR_PIN (need to be defined)                                        |               |
-POWER_OFF_DEEPSLEEP                 |(#define)                              |power off by deep sleep                                                                        |               |   
+POWER_OFF_DEEPSLEEP                 |#define                                |power off by deep sleep                                                                        |               |   
 **Deep sleep**                      |                                       |POWER_OFF_DEEPSLEEP is defined                                                                 |               |
 DEEPSLEEP_TIME                      |0                                      |Time in sec. for deepsleep (0=sleep unitl reset)                                               |Website<br>settings.deepsleepTime|         
 DEEPSLEEP_WAKEUP_GPIO_PIN1          |(1..5)                                 |1. pin for wakeup from deepsleep (only ESP32C2 or ESP32C3)                                     |Coded          |

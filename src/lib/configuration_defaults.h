@@ -114,6 +114,10 @@
         #endif
 #endif
 
+#if (!defined POWER_OFF_EXTERNAL && !defined POWER_OFF_VOLTAGE_REGULATOR && !defined POWER_OFF_DEEPSLEEP)
+    #define POWER_OFF_DEEPSLEEP
+#endif
+
 #ifndef DPID_STATE
     #define DPID_STATE                  0
 #endif
