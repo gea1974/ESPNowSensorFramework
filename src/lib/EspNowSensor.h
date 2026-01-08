@@ -23,7 +23,7 @@
 #include <lib/batteryLevel.h>
 
 #define FRAMEWORK                             "ESP!NOW Sensor Framework"
-#define FRAMEWORK_VERSION                     0x000203
+#define FRAMEWORK_VERSION                     0x000204
 
 // This is the space in bytes that will be reserved in EEPROM for storing data that should be persisted.
 #define EEPROM_SIZE 512
@@ -77,7 +77,7 @@ typedef struct SettingsStructure{
   uint8_t broadcastRepeat = ESPNOW_REPEAT_SEND;
   uint8_t defaultChannel = 1;
   uint32_t deepsleepTime = DEEPSLEEP_TIME;
-  uint32_t Config[6] = {SETTINGS_CONFIG0_INIT, SETTINGS_CONFIG1_INIT, SETTINGS_CONFIG2_INIT, SETTINGS_CONFIG3_INIT, SETTINGS_CONFIG4_INIT, SETTINGS_CONFIG5_INIT};
+  uint32_t Config[6] = {(uint32_t)SETTINGS_CONFIG0_INIT, (uint32_t)SETTINGS_CONFIG1_INIT, (uint32_t)SETTINGS_CONFIG2_INIT, (uint32_t)SETTINGS_CONFIG3_INIT, (uint32_t)SETTINGS_CONFIG4_INIT, (uint32_t)SETTINGS_CONFIG5_INIT};
 } settings_structure_t;
 
 typedef struct ValueStructure{

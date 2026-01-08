@@ -195,12 +195,13 @@ String reason;
 void EspNowSensorClass::configmodeHandle(){
     #ifdef SETUP_PIN
     if (digitalRead(SETUP_PIN)==SETUP_PIN_POLARITY) {
+      unsigned long setupDelay = millis();
       while (digitalRead(SETUP_PIN)==SETUP_PIN_POLARITY) ;// wait for Button released.
-      if (!configmode){
+      if (!configmode && ((millis()-setupDelay)>SETUP_PIN_DELAY)){
         printLogMsgTime("Info: Button: Config mode enter\n" );
         configmodeEnter();
       }
-      else {
+      else if (configmode) {
         printLogMsgTime("Info: Button: Config mode leave\n"); 
         configmodeLeave();  
       }
