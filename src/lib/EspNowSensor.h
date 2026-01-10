@@ -23,7 +23,7 @@
 #include <lib/batteryLevel.h>
 
 #define FRAMEWORK                             "ESP!NOW Sensor Framework"
-#define FRAMEWORK_VERSION                     0x000204
+#define FRAMEWORK_VERSION                     0x000205
 
 // This is the space in bytes that will be reserved in EEPROM for storing data that should be persisted.
 #define EEPROM_SIZE 512

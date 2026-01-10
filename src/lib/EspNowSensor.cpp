@@ -196,7 +196,9 @@ void EspNowSensorClass::configmodeHandle(){
     #ifdef SETUP_PIN
     if (digitalRead(SETUP_PIN)==SETUP_PIN_POLARITY) {
       unsigned long setupDelay = millis();
-      while (digitalRead(SETUP_PIN)==SETUP_PIN_POLARITY) ;// wait for Button released.
+      while (digitalRead(SETUP_PIN)==SETUP_PIN_POLARITY) { // wait for Button released.
+        if ((millis()-setupDelay)>SETUP_PIN_DELAY) digitalWrite(ACTIVE_PIN, millis() % 1000 > 250);         //blink led fast while we are in config mode
+      }
       if (!configmode && ((millis()-setupDelay)>SETUP_PIN_DELAY)){
         printLogMsgTime("Info: Button: Config mode enter\n" );
         configmodeEnter();
@@ -819,12 +821,12 @@ void EspNowSensorClass::initSettings(){
   EEPROM.put(EEPROM_BROADCASTREPEAT , ESPNOW_REPEAT_SEND);
   EEPROM.put(EEPROM_DEFAULTCHANNEL , 1);
   EEPROM.put(EEPROM_DEEPSLEEP_TIME, DEEPSLEEP_TIME);
-  EEPROM.put(EEPROM_CONFIG0, SETTINGS_CONFIG0_INIT); 
-  EEPROM.put(EEPROM_CONFIG1, SETTINGS_CONFIG1_INIT); 
-  EEPROM.put(EEPROM_CONFIG2, SETTINGS_CONFIG1_INIT); 
-  EEPROM.put(EEPROM_CONFIG3, SETTINGS_CONFIG2_INIT); 
-  EEPROM.put(EEPROM_CONFIG4, SETTINGS_CONFIG3_INIT); 
-  EEPROM.put(EEPROM_CONFIG5, SETTINGS_CONFIG4_INIT); 
+  EEPROM.put(EEPROM_CONFIG0, (uint32_t)SETTINGS_CONFIG0_INIT); 
+  EEPROM.put(EEPROM_CONFIG1, (uint32_t)SETTINGS_CONFIG1_INIT); 
+  EEPROM.put(EEPROM_CONFIG2, (uint32_t)SETTINGS_CONFIG1_INIT); 
+  EEPROM.put(EEPROM_CONFIG3, (uint32_t)SETTINGS_CONFIG2_INIT); 
+  EEPROM.put(EEPROM_CONFIG4, (uint32_t)SETTINGS_CONFIG3_INIT); 
+  EEPROM.put(EEPROM_CONFIG5, (uint32_t)SETTINGS_CONFIG4_INIT); 
 
   EEPROM.put(EEPROM_INITIALIZED , EEPROM_INITIALIZED_VALUE);
 
