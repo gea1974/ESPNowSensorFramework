@@ -823,10 +823,10 @@ void EspNowSensorClass::initSettings(){
   EEPROM.put(EEPROM_DEEPSLEEP_TIME, DEEPSLEEP_TIME);
   EEPROM.put(EEPROM_CONFIG0, (uint32_t)SETTINGS_CONFIG0_INIT); 
   EEPROM.put(EEPROM_CONFIG1, (uint32_t)SETTINGS_CONFIG1_INIT); 
-  EEPROM.put(EEPROM_CONFIG2, (uint32_t)SETTINGS_CONFIG1_INIT); 
-  EEPROM.put(EEPROM_CONFIG3, (uint32_t)SETTINGS_CONFIG2_INIT); 
-  EEPROM.put(EEPROM_CONFIG4, (uint32_t)SETTINGS_CONFIG3_INIT); 
-  EEPROM.put(EEPROM_CONFIG5, (uint32_t)SETTINGS_CONFIG4_INIT); 
+  EEPROM.put(EEPROM_CONFIG2, (uint32_t)SETTINGS_CONFIG2_INIT); 
+  EEPROM.put(EEPROM_CONFIG3, (uint32_t)SETTINGS_CONFIG3_INIT); 
+  EEPROM.put(EEPROM_CONFIG4, (uint32_t)SETTINGS_CONFIG4_INIT); 
+  EEPROM.put(EEPROM_CONFIG5, (uint32_t)SETTINGS_CONFIG5_INIT); 
 
   EEPROM.put(EEPROM_INITIALIZED , EEPROM_INITIALIZED_VALUE);
 
@@ -1034,7 +1034,7 @@ String EspNowSensorClass::webserverGetPageRoot(){
       page += "<label for='settings1'>";
       page += SETTINGS_CONFIG1_NAME;
       page += ":</label>";
-      sprintf(buffer,"<INPUT type='number' name='settings0' id='settings1' value='%d'><br>" , EspNowSensor.settings.Config[1]);
+      sprintf(buffer,"<INPUT type='number' name='settings1' id='settings1' value='%d'><br>" , EspNowSensor.settings.Config[1]);
       page += buffer;
     #endif
     #ifdef SETTINGS_CONFIG2
