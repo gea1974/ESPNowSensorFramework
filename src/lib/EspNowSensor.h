@@ -23,7 +23,7 @@
 #include <lib/batteryLevel.h>
 
 #define FRAMEWORK                             "ESP!NOW Sensor Framework"
-#define FRAMEWORK_VERSION                     0x000205
+#define FRAMEWORK_VERSION                     0x000206
 
 // This is the space in bytes that will be reserved in EEPROM for storing data that should be persisted.
 #define EEPROM_SIZE 512
@@ -49,15 +49,15 @@
 #define EEPROM_VALUE2                       408
 #define EEPROM_VALUE3                       412
 
-#define EEPROM_INITIALIZED_VALUE            FRAMEWORK_VERSION
+#define EEPROM_INITIALIZED_VALUE            0x000205
 
 typedef struct EspNowMessageStructure {
-  uint8_t program = 0x0;  // 0x91 for ON button, 0x81 for all others
+  uint8_t program = 0x0;  
   uint8_t seq[4];         // Incremental sequence number 32-bit unsigned integer LSB first
-  uint8_t dTypeState = 0x00;     // Data type: button (32)
-  uint8_t dataState = 0x00;;          // Identifies which button is being pressed
-  uint8_t dTypeBattery = 0x00;;     // Data type: batterylevel (1)
-  uint8_t dataBattery = 0x00;;          // EspNowSensor batterylevel (out of 100)
+  uint8_t dTypeState = 0x00;   
+  uint8_t dataState = 0x00;;      
+  uint8_t dTypeBattery = 0x00;;  
+  uint8_t dataBattery = 0x00;;       
   #ifdef ESPNOW_TELEGRAM_EXTENDED
   uint8_t dTypeData1 = 0x00;;
   uint32_t data1 = 0x00;;
@@ -155,6 +155,7 @@ private:
     void espnowMessageSetupAuthCode();
     void espnowBroadcastMessage();
     void espnowMessageSend();
+    void espnowMessageProductInfo();
     uint8_t broadcastChannel = 0;
 
     void setupConfigMode();

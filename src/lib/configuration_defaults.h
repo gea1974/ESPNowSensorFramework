@@ -3,6 +3,7 @@
     #define VERSION                             0x000000
     #define PRODUCT_ID                          "SENSOR"
     #define DESCRIPTION                         "Generic ESP!Now Sensor"
+    #define PRODUCT_FAMILY_KEY                  0x00
     #define PRODUCT_KEY                         0x00
     #define OWNER                               "gea"
 #endif

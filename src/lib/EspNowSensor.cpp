@@ -689,6 +689,24 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
 void EspNowSensorClass::espnowMessageDataSetProgram(uint8_t prog) {
   broadcast_data_to_send.program = prog;
 }
+
+void EspNowSensorClass::espnowMessageProductInfo() {
+  broadcast_data_to_send.dTypeState =   PRODUCT_FAMILY_KEY;
+  broadcast_data_to_send.dataState =    PRODUCT_KEY;
+  broadcast_data_to_send.dTypeBattery = 0x00;
+  broadcast_data_to_send.dataBattery =  0x00;
+  #ifdef ESPNOW_TELEGRAM_EXTENDED
+  broadcast_data_to_send.dTypeData1 =   settings.useAuthToken;
+  broadcast_data_to_send.data1 =        VERSION;
+  broadcast_data_to_send.dTypeData2 =   0x00;
+  broadcast_data_to_send.data2 =        FRAMEWORK_VERSION;
+  broadcast_data_to_send.dTypeData3 =   0x00;
+  broadcast_data_to_send.data3 =        WiFi.localIP();
+  broadcast_data_to_send.dTypeData4 =   0x00;
+  broadcast_data_to_send.data4 =        settings.channel;
+  #endif
+}
+
 void EspNowSensorClass::espnowMessageDataSend() {
   if (broadcast_data_to_send.program==0x00) broadcast_data_to_send.program = ESPNOW_TELEGRAM_PROGRAM;
   broadcast_data = broadcast_data_to_send;
@@ -697,35 +715,21 @@ void EspNowSensorClass::espnowMessageDataSend() {
 }
 void EspNowSensorClass::espnowMessageAuthTokenRequest(){
   broadcast_data_to_send.program = 0xFA;
-  #ifdef ESPNOW_TELEGRAM_EXTENDED
-  broadcast_data_to_send.dTypeData1 =  PRODUCT_KEY;
-  broadcast_data_to_send.data1 =  VERSION;
-  broadcast_data_to_send.data3 =  FRAMEWORK_VERSION;
-  #endif
+  espnowMessageProductInfo();
   broadcast_data = broadcast_data_to_send;
   espnowMessageClear();
   espnowMessageSend();
 }
 void EspNowSensorClass::espnowMessageAlive(){
   broadcast_data_to_send.program = 0xAF;
-  #ifdef ESPNOW_TELEGRAM_EXTENDED
-  broadcast_data_to_send.dTypeData1 =  PRODUCT_KEY;
-  broadcast_data_to_send.data1 =  VERSION;
-  broadcast_data_to_send.data3 =  FRAMEWORK_VERSION;
-  #endif
+  espnowMessageProductInfo();
   broadcast_data = broadcast_data_to_send;
   espnowMessageClear();
   espnowMessageSend();
 }
 void EspNowSensorClass::espnowMessageConfig(){
   broadcast_data_to_send.program = 0xC0;
-  #ifdef ESPNOW_TELEGRAM_EXTENDED
-  broadcast_data_to_send.dTypeData1 =  PRODUCT_KEY;
-  broadcast_data_to_send.data1 =  VERSION;
-  broadcast_data_to_send.dTypeData2 =  settings.channel;
-  broadcast_data_to_send.data2 =  WiFi.localIP();
-  broadcast_data_to_send.data3 =  FRAMEWORK_VERSION;
-  #endif
+  espnowMessageProductInfo();
   broadcast_data = broadcast_data_to_send;
   espnowMessageClear();
   espnowMessageSend();
@@ -851,7 +855,7 @@ void EspNowSensorClass::saveSensorSettings(){
   EEPROM.commit();
 }
 void EspNowSensorClass::loadSettings(){
-  uint16_t initialized = 0;
+  uint32_t initialized = 0;
   EEPROM.get(EEPROM_INITIALIZED , initialized);
   if (initialized==EEPROM_INITIALIZED_VALUE) {
     EEPROM.get(EEPROM_CHANNEL , settings.channel);
