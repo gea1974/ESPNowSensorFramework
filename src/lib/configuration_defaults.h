@@ -193,7 +193,9 @@
 #if (!defined ESPNOW_TELEGRAM_WIZMOTE && !defined ESPNOW_TELEGRAM_EXTENDED) 
     #define ESPNOW_TELEGRAM_EXTENDED
 #endif
-
+#ifndef ESPNOW_TELEGRAM_PROGRAM
+    #define ESPNOW_TELEGRAM_PROGRAM             0xD0
+#endif
 
 #if (defined ACTIVE_PIN && !defined ACTIVE_PIN_POLARITY)
     #define ACTIVE_PIN_POLARITY                 LOW 
