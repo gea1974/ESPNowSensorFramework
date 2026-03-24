@@ -9,11 +9,11 @@
 
 /*
 **Outputs
-    #define ACTIVE_PIN                      2
-    #define VOLTAGE_REGULATOR_PIN           15
+#define ACTIVE_PIN                              2
+#define VOLTAGE_REGULATOR_PIN                   15
 **Inputs
-#define SETUP_PIN                           0
-#define SHUTDOWN_PIN                        16
+#define SETUP_PIN                               0
+#define SHUTDOWN_PIN                            16
 #define DEEPSLEEP_WAKEUP_GPIO_PIN1              4
 #define DEEPSLEEP_WAKEUP_GPIO_PIN_POLARITY      LOW // ESP_GPIO_WAKEUP_GPIO_HIGH
 */
@@ -23,6 +23,8 @@
 #define SHUTDOWN_TIMER                      60              //Shutdown ESP after s
 #define ESPNOW_ALIVE                                        //Send alive message to ESP!Now on power on (if no Authentification token is required)
 #define ESPNOW_SEND_DATA_COMPLETE                           //Send data message to ESP!Now if all dpid recweived
+#define DPID_BATTERY_LEVEL                                   //Battery value interpreted as level #ifndef: as enumeration 0=low=0, 1=medium=50, 2=high=100
+#define DPID_STATE_DPID_AS_VALUE                            //Unassigned DPID used as state value
 */
 
 /*

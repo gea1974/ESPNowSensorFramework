@@ -631,6 +631,7 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
       printLogMsgTime("ESP!Now: Message: Data: DPID: %d, State = %d\n",dpid, broadcast_data_to_send.dataState);
     }
     else if (dpid==DPID_BATTERY) {
+      #ifndef DPID_BATTERY_LEVEL
       switch (b[3]){
         case 1:{
           b[3] = 50;
@@ -641,6 +642,7 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
           break;
         }
       }
+      #endif
       broadcast_data_to_send.dTypeBattery = dpid;
       broadcast_data_to_send.dataBattery = b[3];
       printLogMsgTime("ESP!Now: Message: Data: DPID: %d, Battery = %d\n",dpid,broadcast_data_to_send.dataBattery);
@@ -665,6 +667,13 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
       broadcast_data_to_send.dTypeData4 = dpid;
       broadcast_data_to_send.data4= value;
       printLogMsgTime("ESP!Now: Message: Data: DPID: %d, Value4 = %d\n",dpid,broadcast_data_to_send.data4);
+    }
+    #endif
+    #ifdef DPID_STATE_DPID_AS_VALUE
+    else if (DPID_STATE!=0) {
+      broadcast_data_to_send.dTypeState = DPID_STATE;
+      broadcast_data_to_send.dataState = dpid;
+      printLogMsgTime("ESP!Now: Message: Data: (DPID as state) DPID: %d, State =  %d\n",broadcast_data_to_send.dTypeState,broadcast_data_to_send.dataState);
     }
     #endif
     else {
