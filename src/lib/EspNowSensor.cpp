@@ -621,14 +621,14 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
       printLogMsgTime("ESP!Now: Message: Data: DPID: null\n");
     }
     else if (dpid==DPID_STATE) {
-      broadcast_data_to_send.dTypeState = dpid;
+      broadcast_data_to_send.dTypeState = DPID_STATE_ESPNOW;
       #ifdef DPID_STATE_POLARITY
       broadcast_data_to_send.dataState = b[3]==DPID_STATE_POLARITY;
       #endif
       #ifndef DPID_STATE_POLARITY
       broadcast_data_to_send.dataState = b[3];
       #endif
-      printLogMsgTime("ESP!Now: Message: Data: DPID: %d, State = %d\n",dpid, broadcast_data_to_send.dataState);
+      printLogMsgTime("ESP!Now: Message: Data: DPID: %d (%d), State = %d\n",dpid,broadcast_data_to_send.dTypeState,broadcast_data_to_send.dataState);
     }
     else if (dpid==DPID_BATTERY) {
       #ifndef DPID_BATTERY_LEVEL
@@ -643,35 +643,35 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
         }
       }
       #endif
-      broadcast_data_to_send.dTypeBattery = dpid;
+      broadcast_data_to_send.dTypeBattery = DPID_BATTERY_ESPNOW;
       broadcast_data_to_send.dataBattery = b[3];
-      printLogMsgTime("ESP!Now: Message: Data: DPID: %d, Battery = %d\n",dpid,broadcast_data_to_send.dataBattery);
+      printLogMsgTime("ESP!Now: Message: Data: DPID: %d (%d), Battery = %d\n",dpid,broadcast_data_to_send.dTypeBattery,broadcast_data_to_send.dataBattery);
     }
     #ifdef ESPNOW_TELEGRAM_EXTENDED
     else if (dpid==DPID_VALUE1) {
-      broadcast_data_to_send.dTypeData1 = dpid;
+      broadcast_data_to_send.dTypeData1 = DPID_VALUE1_ESPNOW;
       broadcast_data_to_send.data1 = value;
-      printLogMsgTime("ESP!Now: Message: Data: DPID: %d, Value1 = %d\n",dpid,broadcast_data_to_send.data1);
+      printLogMsgTime("ESP!Now: Message: Data: DPID: %d (%d), Value1 = %d\n",dpid,broadcast_data_to_send.dTypeData1,broadcast_data_to_send.data1);
     }
     else if (dpid==DPID_VALUE2) {
-      broadcast_data_to_send.dTypeData2 = dpid;
+      broadcast_data_to_send.dTypeData2 = DPID_VALUE2_ESPNOW;
       broadcast_data_to_send.data2 = value;
-      printLogMsgTime("ESP!Now: Message: Data: DPID: %d, Value2 = %d\n",dpid,broadcast_data_to_send.data2);
+      printLogMsgTime("ESP!Now: Message: Data: DPID: %d (%d), Value2 = %d\n",dpid,broadcast_data_to_send.dTypeData2,broadcast_data_to_send.data2);
     }
     else if (dpid==DPID_VALUE3) {
-      broadcast_data_to_send.dTypeData3 = dpid;
+      broadcast_data_to_send.dTypeData3 = DPID_VALUE3_ESPNOW;
       broadcast_data_to_send.data3 = value;
-      printLogMsgTime("ESP!Now: Message: Data: DPID: %d, Value3 = %d\n",dpid,broadcast_data_to_send.data3);
+      printLogMsgTime("ESP!Now: Message: Data: DPID: %d (%d), Value3 = %d\n",dpid,broadcast_data_to_send.dTypeData3,broadcast_data_to_send.data3);
     }
     else if (dpid==DPID_VALUE4) {
-      broadcast_data_to_send.dTypeData4 = dpid;
+      broadcast_data_to_send.dTypeData4 = DPID_VALUE4_ESPNOW;
       broadcast_data_to_send.data4= value;
-      printLogMsgTime("ESP!Now: Message: Data: DPID: %d, Value4 = %d\n",dpid,broadcast_data_to_send.data4);
+      printLogMsgTime("ESP!Now: Message: Data: DPID: %d (%d), Value4 = %d\n",dpid,broadcast_data_to_send.dTypeData4,broadcast_data_to_send.data4);
     }
     #endif
     #ifdef DPID_STATE_DPID_AS_VALUE
     else if (DPID_STATE!=0) {
-      broadcast_data_to_send.dTypeState = DPID_STATE;
+      broadcast_data_to_send.dTypeState = DPID_STATE_ESPNOW;
       broadcast_data_to_send.dataState = dpid;
       printLogMsgTime("ESP!Now: Message: Data: (DPID as state) DPID: %d, State =  %d\n",broadcast_data_to_send.dTypeState,broadcast_data_to_send.dataState);
     }
@@ -681,13 +681,13 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
     }
 
     #ifdef ESPNOW_SEND_DATA_COMPLETE
-    if (   (broadcast_data_to_send.dTypeState==DPID_STATE) 
-        && (broadcast_data_to_send.dTypeBattery==DPID_BATTERY) 
+    if (   (broadcast_data_to_send.dTypeState==DPID_STATE_ESPNOW) 
+        && (broadcast_data_to_send.dTypeBattery==DPID_BATTERY_ESPNOW) 
         #ifdef ESPNOW_TELEGRAM_EXTENDED
-        && (broadcast_data_to_send.dTypeData1==DPID_VALUE1)
-        && (broadcast_data_to_send.dTypeData2==DPID_VALUE2)
-        && (broadcast_data_to_send.dTypeData3==DPID_VALUE3)
-        && (broadcast_data_to_send.dTypeData4==DPID_VALUE4) 
+        && (broadcast_data_to_send.dTypeData1==DPID_VALUE1_ESPNOW)
+        && (broadcast_data_to_send.dTypeData2==DPID_VALUE2_ESPNOW)
+        && (broadcast_data_to_send.dTypeData3==DPID_VALUE3_ESPNOW)
+        && (broadcast_data_to_send.dTypeData4==DPID_VALUE4_ESPNOW) 
         #endif
       )  {
       printLogMsgTime("ESP!Now: Message: Data: all DPID values received, sending ESP!Now message.\n");

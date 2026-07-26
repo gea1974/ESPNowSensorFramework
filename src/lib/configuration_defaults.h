@@ -138,6 +138,25 @@
     #define DPID_VALUE4                 0
 #endif
 
+#ifndef DPID_STATE_ESPNOW
+    #define DPID_STATE_ESPNOW           DPID_STATE   
+#endif
+#ifndef DPID_BATTERY_ESPNOW
+    #define DPID_BATTERY_ESPNOW         DPID_BATTERY
+#endif
+#ifndef DPID_VALUE1_ESPNOW
+    #define DPID_VALUE1_ESPNOW          DPID_VALUE1
+#endif
+#ifndef DPID_VALUE2_ESPNOW
+    #define DPID_VALUE2_ESPNOW          DPID_VALUE2
+#endif
+#ifndef DPID_VALUE3_ESPNOW
+    #define DPID_VALUE3_ESPNOW          DPID_VALUE3
+#endif
+#ifndef DPID_VALUE4_ESPNOW
+    #define DPID_VALUE4_ESPNOW          DPID_VALUE4
+#endif
+
 #ifndef SETTINGS_CONFIG0_INIT
     #define SETTINGS_CONFIG0_INIT                 0
 #endif
