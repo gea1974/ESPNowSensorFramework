@@ -23,8 +23,9 @@
 #define SHUTDOWN_TIMER                      60              //Shutdown ESP after s
 #define ESPNOW_ALIVE                                        //Send alive message to ESP!Now on power on (if no Authentification token is required)
 #define ESPNOW_SEND_DATA_COMPLETE                           //Send data message to ESP!Now if all dpid recweived
-#define DPID_BATTERY_LEVEL                                   //Battery value interpreted as level #ifndef: as enumeration 0=low=0, 1=medium=50, 2=high=100
+#define DPID_BATTERY_LEVEL                                  //Battery value interpreted as level #ifndef: as enumeration 0=low=0, 1=medium=50, 2=high=100
 #define DPID_STATE_DPID_AS_VALUE                            //Unassigned DPID used as state value
+#define DPID_STATE_DPID_AS_VALUE_MAPPING    { {1, 11}, {2,12}, {3,13} }                            //Unassigned DPID used as state value
 */
 
 /*

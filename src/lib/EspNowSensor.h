@@ -23,7 +23,7 @@
 #include <lib/batteryLevel.h>
 
 #define FRAMEWORK                             "ESP!NOW Sensor Framework"
-#define FRAMEWORK_VERSION                     0x000208
+#define FRAMEWORK_VERSION                     0x000209
 
 // This is the space in bytes that will be reserved in EEPROM for storing data that should be persisted.
 #define EEPROM_SIZE 512
@@ -112,7 +112,7 @@ public:
     void configmodeHandle();
     void configmodeEnter();
     void configmodeLeave();
-    void shutDownCheck();
+    void shutDownCheck(bool activity=false);
     void powerOff();
 
     void initSettings();
@@ -161,6 +161,7 @@ private:
     void setupConfigMode();
     unsigned long configModeTime;
     unsigned long startTime;
+    unsigned long activityTime;
 
     //Authentification
     bool      authTokenReqSent = false;

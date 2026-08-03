@@ -1,3 +1,6 @@
+#ifndef CONFIGURATION_DEFAULT_H
+#define CONFIGURATION_DEFAULT_H
+
 #ifndef PRODUCT
     #define PRODUCT                             "ESP!NOW Sensor"
     #define VERSION                             0x000000
@@ -190,11 +193,19 @@
 #endif
 
 #ifndef CONFIG_MODE_TIMEOUT
-    #define CONFIG_MODE_TIMEOUT                 120
+    #define CONFIG_MODE_TIMEOUT                 120000
 #endif
-
+#if CONFIG_MODE_TIMEOUT < 300
+    #warning "WARNING: Definition CONFIG_MODE_TIMEOUT changed to msec!"
+#endif
+#ifndef INACTIVITY_TIMEOUT
+    #define INACTIVITY_TIMEOUT                  0
+#endif
 #ifndef SHUTDOWN_TIMER
-    #define SHUTDOWN_TIMER                      30
+    #define SHUTDOWN_TIMER                      30000
+#endif
+#if SHUTDOWN_TIMER < 60
+    #warning "WARNING: Definition SHUTDOWN_TIMER changed to msec!"
 #endif
 
 #ifndef AUTH_TOKEN_REQ
@@ -243,3 +254,5 @@
 #ifndef DEEPSLEEP_TIME
     #define DEEPSLEEP_TIME                              0
 #endif
+
+#endif 

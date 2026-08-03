@@ -25,7 +25,7 @@ void EspNowSensorClass::begin() {
     if (initialized) {
         return;
     }
-    startTime = millis();
+    startTime = activityTime = millis();
     LoggingBegin();
     printLogMsg("\n\n");
     if (WiFi.mode(WIFI_STA) != true) {
@@ -221,7 +221,7 @@ void EspNowSensorClass::configmodeHandle(){
       ArduinoOTA.handle();
       yield();
     }
-    if( ((millis()-configModeTime)>(CONFIG_MODE_TIMEOUT*1000)) && (CONFIG_MODE_TIMEOUT>0) ) {
+    if( ((millis()-configModeTime)>CONFIG_MODE_TIMEOUT) && (CONFIG_MODE_TIMEOUT>0) ) {
       printLogMsgTime("Info: Config: Time out\n"); 
       configmodeLeave();  
     }
@@ -234,7 +234,7 @@ void EspNowSensorClass::configmodeEnter(){
 }
 void EspNowSensorClass::configmodeLeave(){
   configmode = false;  
-  startTime = millis();
+  startTime = activityTime = millis();
   #ifdef ACTIVE_PIN
     pinMode(ACTIVE_PIN, OUTPUT);
     digitalWrite(ACTIVE_PIN, ACTIVE_PIN_POLARITY);
@@ -396,7 +396,7 @@ void EspNowSensorClass::powerOff() {
       #endif
     #endif
 }
-void EspNowSensorClass::shutDownCheck(){
+void EspNowSensorClass::shutDownCheck(bool activity){
   #ifdef SHUTDOWN_PIN
     if (digitalRead(SHUTDOWN_PIN)==SHUTDOWN_PIN_POLARITY) {
         printLogMsgTime("Info: Button: Shutdown request\n" );
@@ -406,16 +406,27 @@ void EspNowSensorClass::shutDownCheck(){
     }
   #endif
 
+  #if INACTIVITY_TIMEOUT>0
+    if (activity) activityTime = millis();
+    else if (INACTIVITY_TIMEOUT==0) ;
+    else if (configmode) ;
+    else if ( (millis()>(activityTime + INACTIVITY_TIMEOUT)) ){
+        printLogMsgTime("Info: Timer: Inactivity timeout\n");
+        delay(100);
+        powerOff();
+    }
+  #endif
+
+  #if SHUTDOWN_TIMER>0
   if (!configmode) {
-    #ifdef SHUTDOWN_TIMER
-      if ( (millis()>(startTime + (SHUTDOWN_TIMER*1000))) ){
-          printLogMsgTime("Info: Timer: Shutdown request\n" );
+        if ( (millis()>(startTime + SHUTDOWN_TIMER)) ){
+            printLogMsgTime("Info: Timer: Shutdown timer\n");
           delay(100);
           powerOff();
       }
+    }
     #endif
   }
-}
 
 //=============================ESP!Now System
 void EspNowSensorClass::espnowinitialize() {
@@ -670,9 +681,19 @@ void EspNowSensorClass::espnowMessageDataAddSensorValue(uint8_t dpid, uint32_t v
     }
     #endif
     #ifdef DPID_STATE_DPID_AS_VALUE
-    else if (DPID_STATE!=0) {
+    else if (DPID_STATE_ESPNOW!=0) {
+      uint8_t dpidValue = dpid;
+      #ifdef DPID_STATE_DPID_STATE_MAPPING
+        const int mappings[][2] = DPID_STATE_DPID_STATE_MAPPING;
+        const size_t mappingCount = sizeof(mappings) / sizeof(mappings[0]);
+        for (size_t i = 0; i < mappingCount; i++) {
+            if (dpidValue == mappings[i][0]) {
+                dpidValue = mappings[i][1]; 
+            }
+        }
+      #endif
       broadcast_data_to_send.dTypeState = DPID_STATE_ESPNOW;
-      broadcast_data_to_send.dataState = dpid;
+      broadcast_data_to_send.dataState = dpidValue;
       printLogMsgTime("ESP!Now: Message: Data: (DPID as state) DPID: %d, State =  %d\n",broadcast_data_to_send.dTypeState,broadcast_data_to_send.dataState);
     }
     #endif
